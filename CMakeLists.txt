@@ -8,4 +8,4 @@ include_directories(${INCLUDE_DIRS} C:/cpplibs/include)
 link_directories(C:/cpplibs/lib)
 
 add_executable(GameBoy src/main.cpp src/window.cpp)
-target_link_libraries(GameBoy ${LIBRARIES} opengl32 SDL2)
+target_link_libraries(GameBoy ${LIBRARIES} SDL2)
