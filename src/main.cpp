@@ -8,6 +8,8 @@
 #include <GL/gl.h>
 #include <cxxopts.hpp>
 
+#include "registers.hpp"
+
 #ifdef main
 #undef main
 #endif
@@ -61,6 +63,12 @@ int main(int argc, char** argv) {
 		std::cerr << "Failed to open Game ROM file" << std::endl;
 		return 1;
 	}
+
+	Registers registers;
+	printf("%d\n", registers.flags);
+
+	registers.flags |= Flags::FLAG_ZERO;
+	printf("%d\n", registers.flags);
 
 	std::FILE* boot_file = std::fopen("../res/DMG_ROM.bin", "r");
 
