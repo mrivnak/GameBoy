@@ -10,8 +10,7 @@
 			"linux": {
 				"command": "cmake",
 				"args": [
-					"..",
-					"-G \"Unix Makefiles\""
+					".."
 				],
 			},
 			"windows": {

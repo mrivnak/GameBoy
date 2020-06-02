@@ -5,7 +5,7 @@
 		"type": "cppdbg",
 		"request": "launch",
 		"preLaunchTask": "make",
-		"program": "${workspaceFolder}/build/Gameboy",
+		"program": "${workspaceFolder}/build/GameBoy",
 		"args": [],
 		"stopAtEntry": false,
 		"cwd": "${workspaceFolder}",
