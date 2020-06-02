@@ -76,4 +76,5 @@ _deps
 # End of https://www.gitignore.io/api/c,cmake
 
 build/
+res/ROMs/
 .vscode/c_cpp_properties.json

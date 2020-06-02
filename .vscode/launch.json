@@ -6,9 +6,13 @@
 		"request": "launch",
 		"preLaunchTask": "make",
 		"program": "${workspaceFolder}/build/GameBoy",
-		"args": [],
+		"args": [
+			"--debug",
+			"-f",
+			"${workspaceFolder}/res/ROMs/Pokemon Red.gb"
+		],
 		"stopAtEntry": false,
-		"cwd": "${workspaceFolder}",
+		"cwd": "${workspaceFolder}/build",
 		"environment": [],
 		"externalConsole": false,
 		"MIMode": "gdb",

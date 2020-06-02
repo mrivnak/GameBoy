@@ -4,7 +4,7 @@ project(GameBoy)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(${INCLUDE_DIRS} C:/cpplibs/include)
+include_directories(${INCLUDE_DIRS} C:/cpplibs/include C:/clibs/include ./include)
 link_directories(C:/cpplibs/lib)
 
 add_executable(GameBoy src/main.cpp src/window.cpp src/registers.cpp)
