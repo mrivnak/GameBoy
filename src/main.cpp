@@ -6,11 +6,19 @@
 
 #include <GL/gl.h>
 
+#include "registers.hpp"
+
 #ifdef main
 #undef main
 #endif
 int main(int argc, char** argv) {
 	Window window("My Window", 800, 600);
+
+	Registers registers;
+	printf("%d\n", registers.flags);
+
+	registers.flags |= Flags::FLAG_ZERO;
+	printf("%d\n", registers.flags);
 
 	std::FILE* file = std::fopen("../res/DMG_ROM.bin", "r");
 
