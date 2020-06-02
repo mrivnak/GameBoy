@@ -7,5 +7,5 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${INCLUDE_DIRS} C:/cpplibs/include)
 link_directories(C:/cpplibs/lib)
 
-add_executable(GameBoy src/main.cpp src/window.cpp)
+add_executable(GameBoy src/main.cpp src/window.cpp src/registers.cpp)
 target_link_libraries(GameBoy ${LIBRARIES} GL SDL2)
