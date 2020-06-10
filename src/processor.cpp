@@ -22,6 +22,14 @@ void Processor::step() {
 	}
 }
 
+MemoryBus& Processor::getMemory() {
+	return memory;
+}
+
+const MemoryBus& Processor::getMemory() const {
+	return memory;
+}
+
 Processor::~Processor() {
 }
 

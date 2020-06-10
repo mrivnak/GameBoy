@@ -10,6 +10,9 @@ class MemoryBus final {
 
 		uint8_t readByte(uint16_t address) const;
 
+		uint8_t* getData();
+		const uint8_t* getData() const;
+
 		~MemoryBus();
 	private:
 		uint8_t* memory;

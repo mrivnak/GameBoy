@@ -11,6 +11,9 @@ class Processor final {
 
 		void step();
 
+		MemoryBus& getMemory();
+		const MemoryBus& getMemory() const;
+
 		~Processor();
 	private:
 		Registers registers;
