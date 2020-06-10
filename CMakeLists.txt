@@ -8,4 +8,4 @@ include_directories(${INCLUDE_DIRS} C:/cpplibs/include C:/clibs/include ./includ
 link_directories(C:/cpplibs/lib)
 
 add_executable(GameBoy src/main.cpp src/window.cpp src/registers.cpp src/memory-bus.cpp src/processor.cpp)
-target_link_libraries(GameBoy ${LIBRARIES} GL SDL2)
+target_link_libraries(GameBoy ${LIBRARIES} GL SDL2 ncurses)
