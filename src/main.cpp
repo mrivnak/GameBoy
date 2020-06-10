@@ -88,15 +88,11 @@ int main(int argc, char** argv) {
 
 	const uint8_t TEST_PROGRAM[] = {
 		0x00, // NOP
-		0x01, // STOP
-		0x02, (uint8_t)(-2) // JR NZ, 10h
+		0x10, // STOP
+		0x20, (uint8_t)(-4), // JR NZ, 1h
 	};
 
 	std::memcpy(processor.getMemory().getData(), TEST_PROGRAM, sizeof(TEST_PROGRAM));
-
-	for (int i = 0; i < sizeof(TEST_PROGRAM); ++i) {
-		processor.step();
-	}
 
 	Window window("My Window", 800, 600);
 
@@ -108,7 +104,7 @@ int main(int argc, char** argv) {
 		window.pollEvents();
 
 		// processor exec is going in here for now
-		// processor.step();
+		processor.step();
 
 		glClear(GL_COLOR_BUFFER_BIT);
 

@@ -15,7 +15,7 @@ class Instructions final : public Singleton<Instructions> {
     public:
         static constexpr const uint8_t PREFIX_BYTE = 0xCB;
 
-        using Instruction = std::function<uint16_t(uint16_t, Registers&, MemoryBus&)>;
+        using Instruction = std::function<uint16_t(uint16_t, uint8_t&, Registers&, MemoryBus&)>;
 
         Instructions();
 

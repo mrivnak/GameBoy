@@ -17,6 +17,7 @@ class Processor final {
 		Registers registers;
 
 		uint16_t pc;
+		uint8_t yieldCycles;
 
 		MemoryBus memory;
 
