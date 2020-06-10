@@ -20,6 +20,31 @@ void Registers::setHL(uint16_t value) {
 	l = static_cast<uint8_t>(value & 0xFF);
 }
 
+void Registers::setZero(bool zero) {
+	setFlag(Flags::FLAG_CARRY, zero);
+}
+
+void Registers::setSubtract(bool subtract) {
+	setFlag(Flags::FLAG_SUBTRACT, subtract);
+}
+
+void Registers::setHalfCarry(bool halfCarry) {
+	setFlag(Flags::FLAG_HALF_CARRY, halfCarry);
+}
+
+void Registers::setCarry(bool carry) {
+	setFlag(Flags::FLAG_CARRY, carry);
+}
+
+void Registers::setFlag(uint8_t flag, bool set) {
+	if (set) {
+		flags |= flag;
+	}
+	else {
+		flags &= ~flag;
+	}
+}
+
 bool Registers::isZero() const {
 	return flags & Flags::FLAG_ZERO;
 }
