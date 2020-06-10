@@ -18,6 +18,13 @@ struct Registers {
 	void setDE(uint16_t value);
 	void setHL(uint16_t value);
 
+	void setZero(bool zero);
+	void setSubtract(bool subtract);
+	void setHalfCarry(bool halfCarry);
+	void setCarry(bool carry);
+
+	void setFlag(uint8_t flag, bool set);
+
 	uint16_t getAF() const;
 	uint16_t getBC() const;
 	uint16_t getDE() const;
@@ -28,6 +35,7 @@ struct Registers {
 	bool isHalfCarry() const;
 	bool isCarry() const;
 
+	// TODO: see if these should be zeroed 
 	uint8_t a;
 	uint8_t b;
 	uint8_t c;
@@ -38,5 +46,7 @@ struct Registers {
 	uint8_t l;
 
 	uint8_t flags = 0;
+
+	uint16_t sp = 0; // TODO: see if its right to zero it
 };
 

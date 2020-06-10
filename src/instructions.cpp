@@ -10,6 +10,7 @@ namespace {
 
 	uint16_t op_JR(uint16_t pc, uint8_t& cycles, bool cond, int8_t r8);
 
+	uint16_t op_INC8(uint16_t pc, uint8_t& cycles, uint8_t& r, Registers& rs);
 	uint16_t op_INC16(uint16_t pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow);
 };
 
@@ -36,35 +37,71 @@ void Instructions::initPrefixed() {
 }
 
 void Instructions::initNonPrefixed() {
-	nonPrefixed[0][0] = [](uint16_t pc, uint8_t& cycles, Registers&, MemoryBus&) {
+	nonPrefixed[0x0][0x0] = [](uint16_t pc, uint8_t& cycles, Registers&, MemoryBus&) {
 		puts("NOP");
 		cycles = 4;
 		return pc + 1;
 	}; // NOP
 
-	// 16 bit increments
-	nonPrefixed[0][3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC16(pc, cycles, r.b, r.c);
-	}; // INC BC
-	nonPrefixed[1][3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC16(pc, cycles, r.d, r.e);
-	}; // INC DE
-	nonPrefixed[2][3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC16(pc, cycles, r.h, r.l);
-	}; // INC HL
-	// TODO: [3][3] -> INC SP
-
-	nonPrefixed[1][0] = [](uint16_t pc, uint8_t& cycles, Registers&, MemoryBus&) {
+	nonPrefixed[0x1][0x0] = [](uint16_t pc, uint8_t& cycles, Registers&, MemoryBus&) {
 		puts("STOP");
 		cycles = 4;
 		return pc + 1;
 	}; // STOP
 
-	nonPrefixed[2][0] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus& mem) {
+	// 16 bit increments
+	nonPrefixed[0x0][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC16(pc, cycles, r.b, r.c);
+	}; // INC BC
+	nonPrefixed[0x1][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC16(pc, cycles, r.d, r.e);
+	}; // INC DE
+	nonPrefixed[0x2][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC16(pc, cycles, r.h, r.l);
+	}; // INC HL
+	nonPrefixed[0x3][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		uint8_t hi = (r.sp & 0xF0) >> 8;
+		uint8_t lo = r.sp & 0x0F;
+
+		pc = op_INC16(pc, cycles, hi, lo);
+		r.sp = (static_cast<uint16_t>(hi) << 8) | static_cast<uint16_t>(lo);
+
+		return pc;
+	}; // INC SP
+
+	// 8 bit increments
+	nonPrefixed[0x0][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.b, r);
+	}; // INC B
+	nonPrefixed[0x1][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.d, r);
+	}; // INC D
+	nonPrefixed[0x2][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.h, r);
+	}; // INC H
+	/*nonPrefixed[0x3][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.b);
+	}; // INC (HL) */ // TODO: figure this out
+
+	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.c, r);
+	}; // INC C
+	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.e, r);
+	}; // INC E
+	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.l, r);
+	}; // INC L
+	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		return op_INC8(pc, cycles, r.a, r);
+	}; // INC A
+	
+	// Jump Relative
+	nonPrefixed[0x2][0x0] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus& mem) {
 		return ::op_JR(pc, cycles, !r.isZero(), static_cast<int8_t>(mem[pc + 1]));
 	}; // JR NZ, r8
 
-	nonPrefixed[3][0] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus& mem) {
+	nonPrefixed[0x3][0x0] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus& mem) {
 		return ::op_JR(pc, cycles, !r.isCarry(), static_cast<int8_t>(mem[pc + 1]));
 	}; // JR NC, r8
 }
@@ -82,6 +119,19 @@ namespace {
 		return pc + 2;
 	}
 
+	uint16_t op_INC8(uint16_t pc, uint8_t& cycles, uint8_t& r, Registers& rs) {
+		puts("INC8");
+
+		rs.setHalfCarry(r == 0xFF);
+		rs.setSubtract(false);
+		rs.setZero(r == 0);
+
+		++r;
+
+		cycles = 4;
+		return pc + 1;
+	}
+
 	uint16_t op_INC16(uint16_t pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow) {
 		puts("INC16");
 
@@ -91,5 +141,8 @@ namespace {
 
 		rHigh = static_cast<uint8_t>((value >> 8) & 0xFF);
 		rLow = static_cast<uint8_t>(value & 0xFF);
+
+		cycles = 8;
+		return pc + 1;
 	}
 };
