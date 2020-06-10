@@ -1,29 +1,8 @@
 #include "processor.hpp"
 
+#include "instructions.hpp"
+
 #include <cstdio> // TODO: excise logging
-#include <array>
-
-namespace {
-	constexpr const uint8_t PREFIX_BYTE = 0xCB;
-
-	using InstructionFactory = std::function<Processor::Instruction(uint8_t)>;
-
-	const std::array<InstructionFactory, 16> prefixed {};
-	const std::array<InstructionFactory, 16> nonPrefixed {
-		[](uint8_t low) -> Processor::Instruction {
-			printf("Got %d\n", low);
-
-			switch (low) {
-				case 0:
-					return [](uint16_t pc, Registers&) {
-						return pc + 1;
-					};
-				default:
-					return Processor::Instruction();
-			}
-		}
-	};
-};
 
 Processor::Processor()
 		: pc(0) {
@@ -31,14 +10,14 @@ Processor::Processor()
 
 void Processor::step() {
 	uint8_t ib = memory.readByte(pc);
-	bool prefixByte = ib == ::PREFIX_BYTE;
+	bool prefixByte = ib == Instructions::PREFIX_BYTE;
 
 	if (prefixByte) {
 		ib = memory.readByte(pc + 1);
 	}
 
-	if (auto instruction = fetchInstruction(ib, prefixByte); instruction) {
-		pc = instruction(pc, registers);
+	if (auto instruction = Instructions::ref().fetchInstruction(ib, prefixByte)) {
+		pc = instruction(pc, registers, memory);
 	}
 	else {
 		fprintf(stderr, "Invalid instruction: 0x%s%X\n",
@@ -55,18 +34,4 @@ const MemoryBus& Processor::getMemory() const {
 }
 
 Processor::~Processor() {
-}
-
-Processor::Instruction Processor::fetchInstruction(uint8_t ib, bool prefixByte) {
-	const uint8_t high = (ib & 0xF0) >> 4;
-	const uint8_t low = ib & 0x0F;
-
-	auto& factory = prefixByte ? prefixed[high] : nonPrefixed[high];
-
-	if (factory) {
-		return factory(low);
-	}
-
-	// Empty std::function, resolvable to be not callable with operator bool
-	return Processor::Instruction();
 }

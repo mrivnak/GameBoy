@@ -20,3 +20,18 @@ void Registers::setHL(uint16_t value) {
 	l = static_cast<uint8_t>(value & 0xFF);
 }
 
+bool Registers::isZero() const {
+	return flags & Flags::FLAG_ZERO;
+}
+
+bool Registers::isSubtract() const {
+	return flags & Flags::FLAG_SUBTRACT;
+}
+
+bool Registers::isHalfCarry() const {
+	return flags & Flags::FLAG_HALF_CARRY;
+}
+
+bool Registers::isCarry() const {
+	return flags & Flags::FLAG_CARRY;
+}

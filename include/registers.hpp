@@ -23,6 +23,11 @@ struct Registers {
 	uint16_t getDE() const;
 	uint16_t getHL() const;
 
+	bool isZero() const;
+	bool isSubtract() const;
+	bool isHalfCarry() const;
+	bool isCarry() const;
+
 	uint8_t a;
 	uint8_t b;
 	uint8_t c;
@@ -32,6 +37,6 @@ struct Registers {
 	uint8_t h;
 	uint8_t l;
 
-	uint8_t flags;
+	uint8_t flags = 0;
 };
 

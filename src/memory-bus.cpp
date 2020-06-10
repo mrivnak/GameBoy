@@ -9,6 +9,10 @@ uint8_t MemoryBus::readByte(uint16_t address) const {
 	return memory[address];
 }
 
+uint8_t MemoryBus::operator[](uint16_t address) const {
+	return memory[address];
+}
+
 uint8_t* MemoryBus::getData() {
 	return memory;
 }
