@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 
 	std::memcpy(processor.getMemory().getData(), TEST_PROGRAM, sizeof(TEST_PROGRAM));
 
-	Window window("My Window", 800, 600);
+	Window window("My Window", 160, 144);
 
 	if (DEBUG) {
 		

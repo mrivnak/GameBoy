@@ -3,7 +3,7 @@
 #include <string_view>
 #include <SDL2/SDL.h>
 
-class Window {
+class Window final {
 	public:
 		Window(const std::string_view& title, int width, int height);
 
