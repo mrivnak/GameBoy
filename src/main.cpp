@@ -1,4 +1,3 @@
-#include "imwindow.hpp"
 #include "window.hpp"
 
 #include <cstdio>
@@ -63,7 +62,8 @@ int main(int argc, char** argv) {
 	std::FILE* game_file = std::fopen(game_filename.c_str(), "r");
 
 	if (!game_file) {
-		std::cerr << "Failed to open Game ROM file" << std::endl;
+		std::perror("Failed to open game file");
+		std::cerr << "Filename: " << game_filename << std::endl;
 		return 1;
 	}
 
@@ -99,6 +99,10 @@ int main(int argc, char** argv) {
 	}
 
 	Window window("My Window", 800, 600);
+
+	if (DEBUG) {
+		
+	}
 
 	while (!window.isCloseRequested()) {
 		window.pollEvents();
