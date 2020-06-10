@@ -9,6 +9,14 @@ uint8_t MemoryBus::readByte(uint16_t address) const {
 	return memory[address];
 }
 
+uint8_t* MemoryBus::getData() {
+	return memory;
+}
+
+const uint8_t* MemoryBus::getData() const {
+	return memory;
+}
+
 MemoryBus::~MemoryBus() {
 	std::free(memory);
 }

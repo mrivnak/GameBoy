@@ -9,7 +9,9 @@
 #include <GL/gl.h>
 #include <cxxopts.hpp>
 
-#include "registers.hpp"
+#include "processor.hpp"
+
+#define BOOT_ROM_SIZE 0xFF
 
 #ifdef main
 #undef main
@@ -65,11 +67,7 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	Registers registers;
-	printf("%d\n", registers.flags);
-
-	registers.flags |= Flags::FLAG_ZERO;
-	printf("%d\n", registers.flags);
+	Processor processor;
 
 	std::FILE* boot_file = std::fopen("../res/DMG_ROM.bin", "r");
 
@@ -78,23 +76,23 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	uint8_t* mem = static_cast<uint8_t*>(std::malloc(0xFFFF));
-
-	if (std::fread(mem, 1, 0xFF, boot_file) != 0xFF) {
-		std::puts("Failed to write boot ROM!");
+	if (std::fread(processor.getMemory().getData(), 1, BOOT_ROM_SIZE, boot_file)
+			!= BOOT_ROM_SIZE) {
+		std::fputs("Failed to write boot ROM!", stderr);
 		std::fclose(boot_file);
-		std::free(mem);
+
 		return 1;
 	}
 
 	std::fclose(boot_file);
-	std::free(mem);
-
 
 	Window window("My Window", 800, 600);
 
 	while (!window.isCloseRequested()) {
 		window.pollEvents();
+
+		// processor exec is going in here for now
+		processor.step();
 
 		glClear(GL_COLOR_BUFFER_BIT);
 

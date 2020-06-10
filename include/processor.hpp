@@ -3,13 +3,18 @@
 #include "registers.hpp"
 #include "memory-bus.hpp"
 
-class Instruction;
+#include <functional>
 
 class Processor final {
 	public:
+		using Instruction = std::function<uint16_t(uint16_t, Registers&)>;
+
 		Processor();
 
 		void step();
+
+		MemoryBus& getMemory();
+		const MemoryBus& getMemory() const;
 
 		~Processor();
 	private:
@@ -19,7 +24,7 @@ class Processor final {
 
 		MemoryBus memory;
 
-		uint16_t execute(const Instruction&);
+		static Instruction fetchInstruction(uint8_t ib, bool prefixByte);
 
 		// TODO: null copy and assign
 };
