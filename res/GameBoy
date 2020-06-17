@@ -1,0 +1,8 @@
+#!/bin/bash
+
+printf "Registers:\n"
+printf "  AF: %x\n  BC: %x\n" $(($RANDOM % 65536)) $(($RANDOM % 65536))
+printf "  DE: %x\n  HL: %x\n" $(($RANDOM % 65536)) $(($RANDOM % 65536))
+printf "\nFlags:\n"
+printf "  Zero: %d\n  Subtract: %d\n" $(($RANDOM % 2)) $(($RANDOM % 2))
+printf "  Half Carry: %d\n  Carry: %d\n" $(($RANDOM % 2)) $(($RANDOM % 2))

@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 	std::string game_filename;
 	bool DEBUG = false;
 
-	cxxopts::Options options("Game Boy", "Nintendo Game Boy emulator built in C++");
+	cxxopts::Options options("GameBoy", "Nintendo Game Boy emulator built in C++");
 
 	try {
 		options.add_options()

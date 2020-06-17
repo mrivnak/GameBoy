@@ -60,3 +60,19 @@ bool Registers::isHalfCarry() const {
 bool Registers::isCarry() const {
 	return flags & Flags::FLAG_CARRY;
 }
+
+uint16_t Registers::getAF() const {
+	return ((uint16_t)a << 8) | f;
+}
+
+uint16_t Registers::getBC() const {
+	return ((uint16_t)b << 8) | c;
+}
+
+uint16_t Registers::getDE() const {
+	return ((uint16_t)d << 8) | e;
+}
+
+uint16_t Registers::getHL() const {
+	return ((uint16_t)h << 8) | l;
+}
