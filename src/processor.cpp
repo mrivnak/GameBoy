@@ -38,5 +38,13 @@ const MemoryBus& Processor::getMemory() const {
 	return memory;
 }
 
+Registers& Processor::getRegisters() {
+	return registers;
+}
+
+const Registers& Processor::getRegisters() const {
+	return registers;
+}
+
 Processor::~Processor() {
 }

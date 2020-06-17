@@ -12,6 +12,9 @@ class Processor final {
 		MemoryBus& getMemory();
 		const MemoryBus& getMemory() const;
 
+		Registers& getRegisters();
+		const Registers& getRegisters() const;
+
 		~Processor();
 	private:
 		Registers registers;

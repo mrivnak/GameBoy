@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "termdebug.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -97,7 +98,7 @@ int main(int argc, char** argv) {
 	Window window("My Window", 160, 144);
 
 	if (DEBUG) {
-		
+		TermDebug::printDebug(&processor.getRegisters());
 	}
 
 	while (!window.isCloseRequested()) {

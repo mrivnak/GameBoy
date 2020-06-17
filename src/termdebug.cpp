@@ -48,3 +48,7 @@ void TermDebug::printRegisters(struct Registers * regs) {
 
     isReset = false;
 }
+
+void TermDebug::printDebug(struct Registers * regs) {
+    printRegisters(regs);
+}

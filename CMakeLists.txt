@@ -1,11 +1,21 @@
-cmake_minimum_required(VERSION 3.7)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.7)
 
-project(GameBoy)
+PROJECT(GameBoy)
 
-set(CMAKE_CXX_STANDARD 20)
+SET(CMAKE_CXX_STANDARD 20)
 
-include_directories(${INCLUDE_DIRS} C:/cpplibs/include C:/clibs/include ./include)
-link_directories(C:/cpplibs/lib)
+SET(SOURCE_FILES
+    src/main.cpp
+    src/window.cpp
+    src/registers.cpp
+    src/memory-bus.cpp
+    src/processor.cpp
+    src/instructions.cpp
+    src/termdebug.cpp
+)
 
-add_executable(GameBoy src/main.cpp src/window.cpp src/registers.cpp src/memory-bus.cpp src/processor.cpp src/instructions.cpp src/termdebug.cpp)
-target_link_libraries(GameBoy ${LIBRARIES} GL SDL2)
+INCLUDE_DIRECTORIES(${INCLUDE_DIRS} C:/cpplibs/include C:/clibs/include ./include)
+LINK_DIRECTORIES(C:/cpplibs/lib)
+
+ADD_EXECUTABLE(GameBoy ${SOURCE_FILES})
+TARGET_LINK_lIBRARIES(GameBoy ${LIBRARIES} GL SDL2)
