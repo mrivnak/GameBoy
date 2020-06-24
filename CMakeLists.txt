@@ -15,6 +15,7 @@ SET(SOURCE_FILES
     src/instructions.cpp
     src/termdebug.cpp
     src/display.cpp
+    src/audio.cpp
 )
 
 INCLUDE_DIRECTORIES(${INCLUDE_DIRS} C:/cpplibs/include C:/clibs/include ./include)

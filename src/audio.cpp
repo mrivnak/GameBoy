@@ -40,18 +40,18 @@ APU::Square::~Square() {
 }
 
 void APU::Square::getValues() {
-    sweepPeriod     = (memoryBus->readByte(memoryAddress) & 112) >> 4;
-    negate          = (memoryBus->readByte(memoryAddress) & 8) >> 3;
-    shift           = (memoryBus->readByte(memoryAddress) & 7);
-    duty            = (memoryBus->readByte(memoryAddress + 1) & 192) >> 6;
-    lengthLoad      = (memoryBus->readByte(memoryAddress + 1) & 63);
-    startVol        = (memoryBus->readByte(memoryAddress + 2) & 240) >> 4;
-    envAddMode      = (memoryBus->readByte(memoryAddress + 2) & 8) >> 3;
-    period          = (memoryBus->readByte(memoryAddress + 2) & 7);
-    freqLSB         = (memoryBus->readByte(memoryAddress + 3));
-    trigger         = (memoryBus->readByte(memoryAddress + 4) & 128) >> 7;
-    lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 64) >> 6;
-    freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 7);
+    sweepPeriod     = (memoryBus->readByte(memoryAddress + 0) & 0b01110000) >> 4;
+    negate          = (memoryBus->readByte(memoryAddress + 0) & 0b00001000) >> 3;
+    shift           = (memoryBus->readByte(memoryAddress + 0) & 0b00000111) >> 0;
+    duty            = (memoryBus->readByte(memoryAddress + 1) & 0b11000000) >> 6;
+    lengthLoad      = (memoryBus->readByte(memoryAddress + 1) & 0b00111111) >> 0;
+    startVol        = (memoryBus->readByte(memoryAddress + 2) & 0b11110000) >> 4;
+    envAddMode      = (memoryBus->readByte(memoryAddress + 2) & 0b00001000) >> 3;
+    period          = (memoryBus->readByte(memoryAddress + 2) & 0b00000111) >> 0;
+    freqLSB         = (memoryBus->readByte(memoryAddress + 3) & 0b11111111) >> 0;
+    trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
+    lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
+    freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
 }
 
 APU::Wave::Wave(MemoryBus * memBus, const uint16_t memAddr) {
@@ -68,7 +68,7 @@ APU::Wave::~Wave() {
 void APU::Wave::loadSamples(){
     uint8_t sampleByte;
     for (int i = 0; i < 32; i += 2) {
-        sampleByte = memoryBus->readByte(memoryAddress + i);
+        sampleByte = memoryBus->readByte(waveTableRegister + i);
         samples[i] = (sampleByte & 240) >> 4;
         samples[i+1] = sampleByte & 15;
     }
