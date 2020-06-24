@@ -1,26 +1,31 @@
 #pragma once
 
 #include <string_view>
-#include <SDL2/SDL.h>
+
+struct SDL_Window;
+class RenderDevice;
 
 class Window final {
 	public:
-		Window(const std::string_view& title, int width, int height);
-
-		void pollEvents();
 		void swapBuffers();
 
-		bool isCloseRequested() const;
+		SDL_Window* getHandle();
+		RenderDevice& getRenderDevice();
+
+		int getWidth() const;
+		int getHeight() const;
 
 		~Window();
+	protected:
+		Window(const std::string_view& title, int width, int height);
+
+		friend class Application;
 	private:
 		SDL_Window* window;
-		SDL_GLContext context;
+		RenderDevice* renderDevice;
 
 		int width;
 		int height;
-
-		bool shouldClose;
 
 		Window(const Window&) = delete;
 		Window(Window&&) = delete;
