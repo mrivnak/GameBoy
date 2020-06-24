@@ -1,4 +1,7 @@
+#include "application.hpp"
 #include "window.hpp"
+#include "render-device.hpp"
+
 #include "termdebug.hpp"
 
 #include <cstdio>
@@ -95,19 +98,21 @@ int main(int argc, char** argv) {
 
 	std::memcpy(processor.getMemory().getData(), TEST_PROGRAM, sizeof(TEST_PROGRAM));
 
-	Window window("My Window", 160, 144);
+	Application app;
+	Window& window = app.createWindow("Gameboy Emulator", 800, 600);
+	auto& renderDevice = window.getRenderDevice();
 
 	if (DEBUG) {
 		TermDebug::printDebug(&processor.getRegisters());
 	}
 
-	while (!window.isCloseRequested()) {
-		window.pollEvents();
+	while (app.isRunning()) {
+		app.pollEvents();
 
 		// processor exec is going in here for now
 		processor.step();
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		renderDevice.clear();
 
 		glBegin(GL_TRIANGLES);
 		glVertex2f(-1.f, -1.f);
