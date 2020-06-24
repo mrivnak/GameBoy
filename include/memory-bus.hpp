@@ -4,7 +4,7 @@
 
 class MemoryBus final {
 	public:
-		static constexpr const uintptr_t MEMORY_SIZE = 0xFFFF;
+		static constexpr const uintptr_t MEMORY_SIZE = 0x10000;
 
 		MemoryBus();
 
