@@ -26,16 +26,9 @@ void TermDebug::resetCursor(unsigned int up=0, unsigned int down=0, unsigned int
 }
 
 std::string TermDebug::registersString(struct Registers * regs) {
-    return "";
-}
-
-void TermDebug::printRegisters(struct Registers * regs) {
-    if (!isReset)
-        resetCursor(10, 0, 0, 128);
-        isReset = true;
+    std::stringstream output;
     
-    std::cout << \
-        "Game Boy Registers:" << std::endl << \
+    output << "Game Boy Registers:" << std::endl << \
         "  AF: 0x" << std::setfill('0') << std::setw(4) << std::hex << regs->getAF() << std::endl << \
         "  BC: 0x" << std::setfill('0') << std::setw(4) << std::hex << regs->getBC() << std::endl << \
         "  DE: 0x" << std::setfill('0') << std::setw(4) << std::hex << regs->getDE() << std::endl << \
@@ -45,6 +38,16 @@ void TermDebug::printRegisters(struct Registers * regs) {
         "  Subtract: " << std::bitset<1>(regs->isSubtract()) << std::endl << \
         "  Half Carry: " << std::bitset<1>(regs->isHalfCarry()) << std::endl << \
         "  Carry: " << std::bitset<1>(regs->isCarry()) << std::endl;
+
+    return output.str();
+}
+
+void TermDebug::printRegisters(struct Registers * regs) {
+    if (!isReset)
+        resetCursor(10, 0, 0, 128);
+        isReset = true;
+    
+    std::cout << registersString(regs);
 
     isReset = false;
 }
