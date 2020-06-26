@@ -65,13 +65,44 @@ class APU::Wave {
     private:
         MemoryBus * memoryBus;
         uint16_t memoryAddress;
-        
+
         std::array<uint8_t, 32> samples;
         void loadSamples();
+
+        void getValues();
+
+        bool DACPower;
+        bool trigger;
+        bool lengthEnable;
+
+        uint8_t
+            lengthLoad,
+            volumeCode,
+            freqLSB,
+            freqMSB
+        ;
 };
 
 class APU::Noise {
     public:
         Noise(MemoryBus * memoryBus, const uint16_t memoryAddress);
         ~Noise();
+    private:
+        MemoryBus * memoryBus;
+        uint16_t memoryAddress;
+
+        void getValues();
+
+        bool envAddMode;
+        bool LFSRWidth;
+        bool trigger;
+        bool lengthEnable;
+
+        uint8_t
+            lengthLoad,
+            startVol,
+            period,
+            clockShift,
+            divisorCode
+        ;
 };

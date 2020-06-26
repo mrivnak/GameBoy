@@ -74,10 +74,33 @@ void APU::Wave::loadSamples(){
     }
 }
 
-APU::Noise::Noise(MemoryBus * memBus, const uint16_t memAddr) {
+void APU::Wave::getValues() {
+    DACPower        = (memoryBus->readByte(memoryAddress + 0) & 0b10000000) >> 7;
+    lengthLoad      = (memoryBus->readByte(memoryAddress + 1) & 0b11111111) >> 0;
+    volumeCode      = (memoryBus->readByte(memoryAddress + 2) & 0b01100000) >> 5;
+    freqLSB         = (memoryBus->readByte(memoryAddress + 3) & 0b11111111) >> 0;
+    trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
+    lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
+    freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
+}
 
+APU::Noise::Noise(MemoryBus * memBus, const uint16_t memAddr) {
+    memoryBus = memBus;
+    memoryAddress = memAddr;
 }
 
 APU::Noise::~Noise() {
 
+}
+
+void APU::Noise::getValues() {
+    lengthLoad      = (memoryBus->readByte(memoryAddress + 1) & 0b00111111) >> 0;
+    startVol        = (memoryBus->readByte(memoryAddress + 2) & 0b11110000) >> 4;
+    envAddMode      = (memoryBus->readByte(memoryAddress + 2) & 0b00001000) >> 3;
+    period          = (memoryBus->readByte(memoryAddress + 2) & 0b00000111) >> 0;
+    clockShift      = (memoryBus->readByte(memoryAddress + 3) & 0b11110000) >> 4;
+    LFSRWidth       = (memoryBus->readByte(memoryAddress + 3) & 0b00001000) >> 3;
+    divisorCode     = (memoryBus->readByte(memoryAddress + 3) & 0b00000111) >> 4;
+    trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
+    lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
 }
