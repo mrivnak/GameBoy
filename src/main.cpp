@@ -1,9 +1,3 @@
-#include "application.hpp"
-#include "window.hpp"
-#include "render-device.hpp"
-
-#include "termdebug.hpp"
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
@@ -12,7 +6,12 @@
 #include <GL/gl.h>
 #include <cxxopts.hpp>
 
+#include "application.hpp"
+#include "audio.hpp"
 #include "processor.hpp"
+#include "render-device.hpp"
+#include "termdebug.hpp"
+#include "window.hpp"
 
 #define BOOT_ROM_SIZE 0xFF
 
@@ -100,6 +99,7 @@ int main(int argc, char** argv) {
 
 	Application app;
 	Window& window = app.createWindow("Gameboy Emulator", 800, 600);
+	APU::Audio audio(&processor.getMemory());
 	auto& renderDevice = window.getRenderDevice();
 
 	if (DEBUG) {
@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
 
 		// processor exec is going in here for now
 		processor.step();
+		audio.step();
 
 		renderDevice.clear();
 

@@ -19,6 +19,8 @@ class APU::Audio {
     public:
         Audio(MemoryBus * memoryBus);
         ~Audio();
+
+        void step();
     private:
         MemoryBus * memoryBus;
         uint16_t memoryAddress;
@@ -33,6 +35,8 @@ class APU::Square {
     public:
         Square(MemoryBus * memoryBus, const uint16_t memoryAddress, bool sweep);
         ~Square();
+
+        void step();
     private:
         MemoryBus * memoryBus;
         uint16_t memoryAddress;
@@ -56,12 +60,21 @@ class APU::Square {
             freqMSB
         ;
 
+        void step512Hz();
+        void clockLengthCtr();
+        void clockSweep();
+        void clockVolEnv();
+
+        int stepCounter;
+        int slowStepCounter
 };
 
 class APU::Wave {
     public:
         Wave(MemoryBus * memoryBus, const uint16_t memoryAddress);
         ~Wave();
+
+        void step();
     private:
         MemoryBus * memoryBus;
         uint16_t memoryAddress;
@@ -87,6 +100,8 @@ class APU::Noise {
     public:
         Noise(MemoryBus * memoryBus, const uint16_t memoryAddress);
         ~Noise();
+
+        void step();
     private:
         MemoryBus * memoryBus;
         uint16_t memoryAddress;

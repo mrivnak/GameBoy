@@ -69,5 +69,6 @@
         "hash_map": "cpp",
         "iomanip": "cpp",
         "valarray": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": true
 }

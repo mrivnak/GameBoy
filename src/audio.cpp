@@ -27,10 +27,18 @@ APU::Audio::~Audio(){
     delete noise;
 }
 
+void APU::Audio::step() {
+    square1->step();
+    square2->step();
+}
+
 APU::Square::Square(MemoryBus * memBus, const uint16_t memAddr, bool swp) {
     memoryBus = memBus;
     memoryAddress = memAddr;
     sweep = swp;
+
+    stepCounter = 0;
+    slowStepCounter = 0;
 
     getValues();
 }
@@ -52,6 +60,38 @@ void APU::Square::getValues() {
     trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
     lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
     freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
+}
+
+void APU::Square::step() {
+    if (!stepCounter % 8192)
+        step512Hz();
+
+    stepCounter++;
+    stepCounter = stepCounter == 8192 ? 0 : stepCounter;
+}
+
+void APU::Square::step512Hz() {
+    if (!stepCounter % 2)
+        clockLengthCtr();
+    if (!(stepCounter - 2) % 4)
+        clockSweep();
+    if (!(stepCounter - 1) % 8)
+        clockVolEnv();
+
+    slowStepCounter++;
+    slowStepCounter = slowStepCounter == 8 ? 0 : slowStepCounter;
+}
+
+void APU::Square::clockLengthCtr() {
+
+}
+
+void APU::Square::clockSweep() {
+
+}
+
+void APU::Square::clockVolEnv() {
+
 }
 
 APU::Wave::Wave(MemoryBus * memBus, const uint16_t memAddr) {
