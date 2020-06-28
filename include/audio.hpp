@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <iostream>
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -22,6 +23,14 @@ class APU::Audio {
 
         void step();
     private:
+        // OpenAL
+        ALCdevice * device;
+        ALCcontext * context;
+        ALsizei bufferSize = 4096;
+        ALuint * buffers;
+
+        void genBuffers();
+
         MemoryBus * memoryBus;
         uint16_t memoryAddress;
 
@@ -38,6 +47,9 @@ class APU::Square {
 
         void step();
     private:
+        // OpenAL
+        ALuint * source;
+
         MemoryBus * memoryBus;
         uint16_t memoryAddress;
         bool sweep;
@@ -65,8 +77,10 @@ class APU::Square {
         void clockSweep();
         void clockVolEnv();
 
-        int stepCounter;
-        int slowStepCounter
+        unsigned int stepCounter;
+        unsigned int slowStepCounter;
+
+        uint16_t timer;
 };
 
 class APU::Wave {
@@ -94,6 +108,14 @@ class APU::Wave {
             freqLSB,
             freqMSB
         ;
+
+        void step512Hz();
+        void clockLengthCtr();
+
+        unsigned int stepCounter;
+        unsigned int slowStepCounter;
+
+        uint16_t timer;
 };
 
 class APU::Noise {

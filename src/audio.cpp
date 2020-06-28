@@ -7,12 +7,28 @@ const uint16_t waveRegister         = 0xFF1A;
 const uint16_t noiseRegister        = 0xFF1F;
 const uint16_t waveTableRegister    = 0xFF30;
 
+// #### Audio ####
 
 APU::Audio::Audio(MemoryBus * memoryBus) {
+    // Create channels
     square1 = new Square(memoryBus, squareWaveRegister1, true);
     square2 = new Square(memoryBus, squareWaveRegister2, false);
     wave = new Wave(memoryBus, waveRegister);
     noise = new Noise(memoryBus, noiseRegister);
+
+    // OpenAL initialization
+    device = alcOpenDevice(nullptr);
+    if (device) {
+        context = alcCreateContext(device, nullptr);
+        alcMakeContextCurrent(context);
+    }
+    else {
+        // TODO: Handle errors
+        std::cerr << "ERROR: Audio device not loaded!" << std::endl;
+    }
+
+    genBuffers();
+    
 }
 
 APU::Audio::~Audio(){
@@ -25,12 +41,33 @@ APU::Audio::~Audio(){
     delete square2;
     delete wave;
     delete noise;
+
+    context = alcGetCurrentContext();
+    device = alcGetContextsDevice(context);
+    alcMakeContextCurrent(nullptr);
+    alcDestroyContext(context);
+    alcCloseDevice(device);
+}
+
+void APU::Audio::genBuffers() {
+    ALenum error;
+
+    // clear error code
+    alGetError();
+    
+    alGenBuffers(bufferSize, buffers);
+    if ((error = alGetError()) != AL_NO_ERROR) {
+        std::cerr << "OpenAL Error: alGenBuffers:" << error << std::endl;
+        return;
+    }
 }
 
 void APU::Audio::step() {
     square1->step();
     square2->step();
 }
+
+// #### Square Wave Channel ####
 
 APU::Square::Square(MemoryBus * memBus, const uint16_t memAddr, bool swp) {
     memoryBus = memBus;
@@ -40,11 +77,20 @@ APU::Square::Square(MemoryBus * memBus, const uint16_t memAddr, bool swp) {
     stepCounter = 0;
     slowStepCounter = 0;
 
+
+    ALenum error;
+
+    alGenSources(1, source);
+    if ((error = alGetError()) != AL_NO_ERROR) {
+        std::cerr << "OpenAL Error: alGenSources:" << error << std::endl;
+        return;
+    }
+
     getValues();
 }
 
 APU::Square::~Square() {
-
+    alDeleteSources(1, source);
 }
 
 void APU::Square::getValues() {
@@ -63,11 +109,13 @@ void APU::Square::getValues() {
 }
 
 void APU::Square::step() {
-    if (!stepCounter % 8192)
+    if (!stepCounter)
         step512Hz();
 
     stepCounter++;
-    stepCounter = stepCounter == 8192 ? 0 : stepCounter;
+    
+    if (stepCounter == 8192)
+        stepCounter = 0;
 }
 
 void APU::Square::step512Hz() {
@@ -79,7 +127,9 @@ void APU::Square::step512Hz() {
         clockVolEnv();
 
     slowStepCounter++;
-    slowStepCounter = slowStepCounter == 8 ? 0 : slowStepCounter;
+
+    if (slowStepCounter == 8)
+        slowStepCounter = 0;
 }
 
 void APU::Square::clockLengthCtr() {
@@ -93,6 +143,8 @@ void APU::Square::clockSweep() {
 void APU::Square::clockVolEnv() {
 
 }
+
+// #### Waveform Channel ####
 
 APU::Wave::Wave(MemoryBus * memBus, const uint16_t memAddr) {
     memoryBus = memBus;
@@ -123,6 +175,32 @@ void APU::Wave::getValues() {
     lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
     freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
 }
+
+void APU::Wave::step() {
+    if (!stepCounter)
+        step512Hz();
+
+    stepCounter++;
+    
+    if (stepCounter == 8192)
+        stepCounter = 0;
+}
+
+void APU::Wave::step512Hz() {
+    if (!stepCounter % 2)
+        clockLengthCtr();
+
+    slowStepCounter++;
+
+    if (slowStepCounter == 8)
+        slowStepCounter = 0;
+}
+
+void APU::Wave::clockLengthCtr() {
+
+}
+
+// #### Noise Channel ####
 
 APU::Noise::Noise(MemoryBus * memBus, const uint16_t memAddr) {
     memoryBus = memBus;
