@@ -60,11 +60,31 @@ void APU::Audio::genBuffers() {
         std::cerr << "OpenAL Error: alGenBuffers:" << error << std::endl;
         return;
     }
+
+    // Set static audio
+    alListener3f(AL_POSITION, 0, 0, 0);
+    alListener3f(AL_VELOCITY, 0, 0, 0);
 }
 
 void APU::Audio::step() {
     square1->step();
     square2->step();
+}
+
+// #### OpenAL Source ####
+
+APU::Source::Source() {
+    ALenum error;
+
+    alGenSources(1, source);
+    if ((error = alGetError()) != AL_NO_ERROR) {
+        std::cerr << "OpenAL Error: alGenSources:" << error << std::endl;
+        return;
+    }
+}
+
+APU::Source::~Source() {
+    alDeleteSources(1, source);
 }
 
 // #### Square Wave Channel ####
@@ -77,20 +97,11 @@ APU::Square::Square(MemoryBus * memBus, const uint16_t memAddr, bool swp) {
     stepCounter = 0;
     slowStepCounter = 0;
 
-
-    ALenum error;
-
-    alGenSources(1, source);
-    if ((error = alGetError()) != AL_NO_ERROR) {
-        std::cerr << "OpenAL Error: alGenSources:" << error << std::endl;
-        return;
-    }
-
     getValues();
 }
 
 APU::Square::~Square() {
-    alDeleteSources(1, source);
+    
 }
 
 void APU::Square::getValues() {

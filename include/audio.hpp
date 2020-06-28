@@ -11,6 +11,7 @@
 
 namespace APU {
     class Audio;
+    class Source;
     class Square;
     class Wave;
     class Noise;
@@ -28,6 +29,7 @@ class APU::Audio {
         ALCcontext * context;
         ALsizei bufferSize = 4096;
         ALuint * buffers;
+        ALuint * listener;
 
         void genBuffers();
 
@@ -40,16 +42,22 @@ class APU::Audio {
         Noise * noise;
 };
 
-class APU::Square {
+class APU::Source {
+    public:
+        Source();
+        ~Source();
+    private:
+        // OpenAL
+        ALuint * source;
+};
+
+class APU::Square : private APU::Source {
     public:
         Square(MemoryBus * memoryBus, const uint16_t memoryAddress, bool sweep);
         ~Square();
 
         void step();
     private:
-        // OpenAL
-        ALuint * source;
-
         MemoryBus * memoryBus;
         uint16_t memoryAddress;
         bool sweep;
@@ -79,11 +87,9 @@ class APU::Square {
 
         unsigned int stepCounter;
         unsigned int slowStepCounter;
-
-        uint16_t timer;
 };
 
-class APU::Wave {
+class APU::Wave : private APU::Source {
     public:
         Wave(MemoryBus * memoryBus, const uint16_t memoryAddress);
         ~Wave();
@@ -114,11 +120,9 @@ class APU::Wave {
 
         unsigned int stepCounter;
         unsigned int slowStepCounter;
-
-        uint16_t timer;
 };
 
-class APU::Noise {
+class APU::Noise : private APU::Source {
     public:
         Noise(MemoryBus * memoryBus, const uint16_t memoryAddress);
         ~Noise();
