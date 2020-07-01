@@ -17,6 +17,7 @@ SET(SOURCE_FILES
     src/display.cpp
     src/audio.cpp
     src/bitmap.cpp
+    src/texture.cpp
 )
 
 INCLUDE_DIRECTORIES(${INCLUDE_DIRS} C:/cpplibs/include C:/clibs/include ./include)
