@@ -109,8 +109,6 @@ int main(int argc, char** argv) {
 		TermDebug::printDebug(&processor.getRegisters());
 	}
 
-	glEnable(GL_TEXTURE_2D);
-
 	Bitmap bmp(64, 64);
 	auto data = bmp.getData();
 
@@ -131,17 +129,7 @@ int main(int argc, char** argv) {
 		processor.step();
 
 		renderDevice.clear();
-
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.f, 0.f);
-		glVertex2f(-1.f, -1.f);
-		glTexCoord2f(0.f, 1.f);
-		glVertex2f(-1.f, 1.f);
-		glTexCoord2f(1.f, 1.f);
-		glVertex2f(1.f, 1.f);
-		glTexCoord2f(1.f, 0.f);
-		glVertex2f(1.f, -1.f);
-		glEnd();
+		renderDevice.drawTexturedQuad(tex);
 
 		window.swapBuffers();
 	}
