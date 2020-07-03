@@ -117,19 +117,31 @@ void APU::Square::getValues() {
     trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
     lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
     freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
+
+    freq = ((uint16_t) freqMSB << 4) + freqLSB;
 }
 
 void APU::Square::step() {
-    if (!stepCounter)
-        step512Hz();
+    // Frame Counter
+    if (stepCounter == 0)
+        stepFrameCounter();
 
     stepCounter++;
     
     if (stepCounter == 8192)
         stepCounter = 0;
+
+    // Timer
+    if (timerCounter <= 0) {
+        getValues();
+        timerCounter = 4194304 / freq;
+        outputClock();
+    }
+
+    timerCounter--;
 }
 
-void APU::Square::step512Hz() {
+void APU::Square::stepFrameCounter() {
     if (!stepCounter % 2)
         clockLengthCtr();
     if (!(stepCounter - 2) % 4)
@@ -185,11 +197,13 @@ void APU::Wave::getValues() {
     trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
     lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
     freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
+
+    freq = ((uint16_t) freqMSB << 4) + freqLSB;
 }
 
 void APU::Wave::step() {
     if (!stepCounter)
-        step512Hz();
+        stepFrameCounter();
 
     stepCounter++;
     
@@ -197,7 +211,7 @@ void APU::Wave::step() {
         stepCounter = 0;
 }
 
-void APU::Wave::step512Hz() {
+void APU::Wave::stepFrameCounter() {
     if (!stepCounter % 2)
         clockLengthCtr();
 

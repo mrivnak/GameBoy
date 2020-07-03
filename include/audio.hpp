@@ -63,6 +63,7 @@ class APU::Square : private APU::Source {
         bool sweep;
 
         void getValues();
+        void outputClock();
 
         bool negate;
         bool envAddMode;
@@ -80,13 +81,16 @@ class APU::Square : private APU::Source {
             freqMSB
         ;
 
-        void step512Hz();
+        uint16_t freq;
+
+        void stepFrameCounter();
         void clockLengthCtr();
         void clockSweep();
         void clockVolEnv();
 
         unsigned int stepCounter;
         unsigned int slowStepCounter;
+        unsigned int timerCounter;
 };
 
 class APU::Wave : private APU::Source {
@@ -115,7 +119,9 @@ class APU::Wave : private APU::Source {
             freqMSB
         ;
 
-        void step512Hz();
+        uint16_t freq;
+
+        void stepFrameCounter();
         void clockLengthCtr();
 
         unsigned int stepCounter;
