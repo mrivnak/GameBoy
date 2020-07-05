@@ -1,21 +1,8 @@
 #include "audio.hpp"
 
-const uint16_t volumeRegister       = 0xFF24;
-const uint16_t squareWaveRegister1  = 0xFF10;
-const uint16_t squareWaveRegister2  = 0xFF15;
-const uint16_t waveRegister         = 0xFF1A;
-const uint16_t noiseRegister        = 0xFF1F;
-const uint16_t waveTableRegister    = 0xFF30;
-
 // #### Audio ####
 
 APU::Audio::Audio(MemoryBus * memoryBus) {
-    // Create channels
-    square1 = new Square(memoryBus, squareWaveRegister1, true);
-    square2 = new Square(memoryBus, squareWaveRegister2, false);
-    wave = new Wave(memoryBus, waveRegister);
-    noise = new Noise(memoryBus, noiseRegister);
-
     // OpenAL initialization
     device = alcOpenDevice(nullptr);
     if (device) {
@@ -26,6 +13,12 @@ APU::Audio::Audio(MemoryBus * memoryBus) {
         // TODO: Handle errors
         std::cerr << "ERROR: Audio device not loaded!" << std::endl;
     }
+
+    // Create channels
+    square1 = new Square(device, memoryBus, SQUARE_WAVE_REGISTER_1, true);
+    square2 = new Square(device, memoryBus, SQUARE_WAVE_REGISTER_2, false);
+    wave = new Wave(device, memoryBus, WAVE_REGISTER);
+    noise = new Noise(device, memoryBus, NOISE_REGISTER);
 
     genBuffers();
     
@@ -81,6 +74,8 @@ APU::Source::Source() {
         std::cerr << "OpenAL Error: alGenSources:" << error << std::endl;
         return;
     }
+
+    alcGetIntegerv(device, ALC_FREQUENCY, 1, sampleRate);
 }
 
 APU::Source::~Source() {
@@ -89,15 +84,17 @@ APU::Source::~Source() {
 
 // #### Square Wave Channel ####
 
-APU::Square::Square(MemoryBus * memBus, const uint16_t memAddr, bool swp) {
-    memoryBus = memBus;
-    memoryAddress = memAddr;
-    sweep = swp;
+APU::Square::Square(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress, bool sweep) {
+    this->device = device;
+    this->memoryBus = memoryBus;
+    this->memoryAddress = memoryAddress;
+    this->sweep = sweep;
 
-    stepCounter = 0;
-    slowStepCounter = 0;
+    fiveBitCounter = 0;
 
     getValues();
+
+    timerCounter = 2048 - freq;
 }
 
 APU::Square::~Square() {
@@ -122,56 +119,33 @@ void APU::Square::getValues() {
 }
 
 void APU::Square::step() {
-    // Frame Counter
-    if (stepCounter == 0)
-        stepFrameCounter();
-
-    stepCounter++;
-    
-    if (stepCounter == 8192)
-        stepCounter = 0;
-
     // Timer
-    if (timerCounter <= 0) {
-        getValues();
-        timerCounter = 4194304 / freq;
-        outputClock();
+
+    if (fiveBitCounter == 0)
+
+        timer();
+    
+    fiveBitCounter++;
+
+    if (fiveBitCounter == 31)
+        fiveBitCounter = 0;
+}
+
+void APU::Square::timer() {
+    if (timerCounter == 0) {
+        timerCounter = 2048 - freq;
     }
+
+    outputClock();
 
     timerCounter--;
 }
-
-void APU::Square::stepFrameCounter() {
-    if (!stepCounter % 2)
-        clockLengthCtr();
-    if (!(stepCounter - 2) % 4)
-        clockSweep();
-    if (!(stepCounter - 1) % 8)
-        clockVolEnv();
-
-    slowStepCounter++;
-
-    if (slowStepCounter == 8)
-        slowStepCounter = 0;
-}
-
-void APU::Square::clockLengthCtr() {
-
-}
-
-void APU::Square::clockSweep() {
-
-}
-
-void APU::Square::clockVolEnv() {
-
-}
-
 // #### Waveform Channel ####
 
-APU::Wave::Wave(MemoryBus * memBus, const uint16_t memAddr) {
-    memoryBus = memBus;
-    memoryAddress = memAddr;
+APU::Wave::Wave(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress) {
+    this->device = device;
+    this->memoryBus = memoryBus;
+    this->memoryAddress = memoryAddress;
     
     loadSamples();
 }
@@ -183,7 +157,7 @@ APU::Wave::~Wave() {
 void APU::Wave::loadSamples(){
     uint8_t sampleByte;
     for (int i = 0; i < 32; i += 2) {
-        sampleByte = memoryBus->readByte(waveTableRegister + i);
+        sampleByte = memoryBus->readByte(WAVE_TABLE_REGISTER + i);
         samples[i] = (sampleByte & 240) >> 4;
         samples[i+1] = sampleByte & 15;
     }
@@ -227,9 +201,10 @@ void APU::Wave::clockLengthCtr() {
 
 // #### Noise Channel ####
 
-APU::Noise::Noise(MemoryBus * memBus, const uint16_t memAddr) {
-    memoryBus = memBus;
-    memoryAddress = memAddr;
+APU::Noise::Noise(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress) {
+    this->device = device;
+    this->memoryBus = memoryBus;
+    this->memoryAddress = memoryAddress;
 }
 
 APU::Noise::~Noise() {
