@@ -13,6 +13,9 @@
 #include "termdebug.hpp"
 #include "window.hpp"
 
+#include "bitmap.hpp"
+#include "texture.hpp"
+
 #define BOOT_ROM_SIZE 0xFF
 
 #ifdef main
@@ -106,6 +109,19 @@ int main(int argc, char** argv) {
 		TermDebug::printDebug(&processor.getRegisters());
 	}
 
+	Bitmap bmp(64, 64);
+	auto data = bmp.getData();
+
+	for (int y = 0, i = 0; y < 64; ++y) {
+		for (int x = 0; x < 64; ++x, i += 3) {
+			data[i] = 4 * x;
+			data[i + 1] = 4 * y;
+			data[i + 2] = 0;
+		}
+	}
+
+	Texture tex(bmp);
+
 	while (app.isRunning()) {
 		app.pollEvents();
 
@@ -114,12 +130,7 @@ int main(int argc, char** argv) {
 		audio.step();
 
 		renderDevice.clear();
-
-		glBegin(GL_TRIANGLES);
-		glVertex2f(-1.f, -1.f);
-		glVertex2f(0.f, 1.f);
-		glVertex2f(1.f, -1.f);
-		glEnd();
+		renderDevice.drawTexturedQuad(tex);
 
 		window.swapBuffers();
 	}

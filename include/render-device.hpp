@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 class Window;
+class Texture;
 
 // TODO: probably expand this to also have RenderContext which we draw from
 class RenderDevice final {
@@ -11,7 +12,8 @@ class RenderDevice final {
 
         void clear();
 
-        // TODO: render quad
+        // TODO: position and scale params
+        void drawTexturedQuad(Texture& texture);
 
         ~RenderDevice();
     private:

@@ -16,7 +16,8 @@ SET(SOURCE_FILES
     src/termdebug.cpp
     src/display.cpp
     src/audio.cpp
-    src/wave-gen.cpp
+    src/texture.cpp
+    src/bitmap.cpp
 )
 
 INCLUDE_DIRECTORIES(${INCLUDE_DIRS} C:/cpplibs/include C:/clibs/include ./include)
