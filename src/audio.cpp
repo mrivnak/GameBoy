@@ -32,7 +32,56 @@ APU::Square::Square(MemoryBus * memBus, const uint16_t memAddr, bool swp) {
     memoryAddress = memAddr;
     sweep = swp;
 
+    // clear error code
+    alGetError();
+    
+    alGenBuffers(bufferSize, buffers);
+    if ((error = alGetError()) != AL_NO_ERROR) {
+        std::cerr << "OpenAL Error: alGenBuffers:" << error << std::endl;
+        return;
+    }
+
+    // Set static audio
+    alListener3f(AL_POSITION, 0, 0, 0);
+    alListener3f(AL_VELOCITY, 0, 0, 0);
+}
+
+void APU::Audio::step() {
+    square1->step();
+    square2->step();
+}
+
+// #### OpenAL Source ####
+
+APU::Source::Source() {
+    ALenum error;
+
+    alGenSources(1, source);
+    if ((error = alGetError()) != AL_NO_ERROR) {
+        std::cerr << "OpenAL Error: alGenSources:" << error << std::endl;
+        return;
+    }
+
+    alcGetIntegerv(device, ALC_FREQUENCY, 1, sampleRate);
+}
+
+APU::Source::~Source() {
+    alDeleteSources(1, source);
+}
+
+// #### Square Wave Channel ####
+
+APU::Square::Square(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress, bool sweep) {
+    this->device = device;
+    this->memoryBus = memoryBus;
+    this->memoryAddress = memoryAddress;
+    this->sweep = sweep;
+
+    fiveBitCounter = 0;
+
     getValues();
+
+    timerCounter = 2048 - freq;
 }
 
 APU::Square::~Square() {
@@ -52,11 +101,38 @@ void APU::Square::getValues() {
     trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
     lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
     freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
+
+    freq = ((uint16_t) freqMSB << 4) + freqLSB;
 }
 
-APU::Wave::Wave(MemoryBus * memBus, const uint16_t memAddr) {
-    memoryBus = memBus;
-    memoryAddress = memAddr;
+void APU::Square::step() {
+    // Timer
+
+    if (fiveBitCounter == 0)
+
+        timer();
+    
+    fiveBitCounter++;
+
+    if (fiveBitCounter == 31)
+        fiveBitCounter = 0;
+}
+
+void APU::Square::timer() {
+    if (timerCounter == 0) {
+        timerCounter = 2048 - freq;
+    }
+
+    outputClock();
+
+    timerCounter--;
+}
+// #### Waveform Channel ####
+
+APU::Wave::Wave(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress) {
+    this->device = device;
+    this->memoryBus = memoryBus;
+    this->memoryAddress = memoryAddress;
     
     loadSamples();
 }

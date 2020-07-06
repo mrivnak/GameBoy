@@ -39,6 +39,8 @@ class APU::Square {
         bool sweep;
 
         void getValues();
+        void timer();
+        void outputClock();
 
         bool negate;
         bool envAddMode;
@@ -56,6 +58,10 @@ class APU::Square {
             freqMSB
         ;
 
+        uint16_t freq;
+
+        unsigned int fiveBitCounter;
+        unsigned int timerCounter;
 };
 
 class APU::Wave {
