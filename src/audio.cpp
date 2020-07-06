@@ -1,4 +1,5 @@
 #include "audio.hpp"
+#include "wave-gen.hpp"
 
 // #### Audio ####
 
@@ -91,10 +92,13 @@ APU::Square::Square(ALCdevice * device, MemoryBus * memoryBus, const uint16_t me
     this->sweep = sweep;
 
     fiveBitCounter = 0;
+    stepCounter = 0;
 
     getValues();
 
     timerCounter = 2048 - freq;
+    lengthCounterVal = lengthLoad;
+    lengthCtrDisable = false;
 }
 
 APU::Square::~Square() {
@@ -105,30 +109,55 @@ void APU::Square::getValues() {
     sweepPeriod     = (memoryBus->readByte(memoryAddress + 0) & 0b01110000) >> 4;
     negate          = (memoryBus->readByte(memoryAddress + 0) & 0b00001000) >> 3;
     shift           = (memoryBus->readByte(memoryAddress + 0) & 0b00000111) >> 0;
-    duty            = (memoryBus->readByte(memoryAddress + 1) & 0b11000000) >> 6;
+    dutyCode        = (memoryBus->readByte(memoryAddress + 1) & 0b11000000) >> 6;
     lengthLoad      = (memoryBus->readByte(memoryAddress + 1) & 0b00111111) >> 0;
     startVol        = (memoryBus->readByte(memoryAddress + 2) & 0b11110000) >> 4;
     envAddMode      = (memoryBus->readByte(memoryAddress + 2) & 0b00001000) >> 3;
     period          = (memoryBus->readByte(memoryAddress + 2) & 0b00000111) >> 0;
     freqLSB         = (memoryBus->readByte(memoryAddress + 3) & 0b11111111) >> 0;
     trigger         = (memoryBus->readByte(memoryAddress + 4) & 0b10000000) >> 7;
+
     lengthEnable    = (memoryBus->readByte(memoryAddress + 4) & 0b01000000) >> 6;
     freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
 
     freq = ((uint16_t) freqMSB << 4) + freqLSB;
+    
+    switch (dutyCode) {
+        case 0:
+            duty = 0.125;
+            break;
+        case 1:
+            duty = 0.25;
+            break;
+        case 2:
+            duty = 0.5;
+            break;
+        case 3:
+            duty = 0.75;
+            break;
+    }
 }
 
 void APU::Square::step() {
     // Timer
-
     if (fiveBitCounter == 0)
 
         timer();
     
     fiveBitCounter++;
 
-    if (fiveBitCounter == 31)
+    if (fiveBitCounter == 32)
         fiveBitCounter = 0;
+
+    // Counters
+    if (stepCounter % 16384 == 0) {
+        lengthClock()
+    }
+
+    stepCounter++;
+
+    if (stepCounter == 16384) 
+        stepCounter = 0;
 }
 
 void APU::Square::timer() {
@@ -140,6 +169,27 @@ void APU::Square::timer() {
 
     timerCounter--;
 }
+
+void APU::Square::outputClock() {
+    if (!lengthCtrDisable) {
+        getValues();
+        double amplitude = ;
+
+        std::vector<ALint> samples = AudioGen::getSample(AudioGen::Square, sampleRate, freq, 1, duty)
+    }
+}
+
+void APU::Square::lengthClock() {
+    getValues();
+
+    if (lengthEnable && lengthCounter != 0) {
+        lengthCounter--;
+    }
+
+    if (lengthCounter == 0)
+        lengthCtrDisable = true;
+}
+
 // #### Waveform Channel ####
 
 APU::Wave::Wave(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress) {

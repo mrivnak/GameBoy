@@ -4,12 +4,13 @@
 #include <vector>
 
 const short MAX_AMPLITUDE = 32767;
+const int CPU_FREQ = 4194304;
 
 namespace AudioGen {
     uint16_t squareWave(int sampleRate, int time, int frequency, double amplitude, double duty);
-    uint16_t noiseWave(int sampleRate, int time, int frequency, double amplitude, double duty);
+    uint16_t noiseWave(int sampleRate, int time);
 
     enum wave{Square, Noise};
 
-    std::vector<short> getSamples(wave type, int sampleRate);
+    std::vector<uint16_t> getSample(wave type, int sampleRate, int frequency, double amplitude, double duty);
 }
