@@ -15,6 +15,8 @@ uint16_t AudioGen::squareWave(int sampleRate, int time, int frequency, double am
 
 uint16_t AudioGen::noiseWave(int sampleRate, int time) {
     // TODO: Implement noise wave generator
+    
+    return 0;
 }
 
 std::vector<ALint> AudioGen::getSample(AudioGen::wave type, int sampleRate, int frequency, double amplitude, double duty) {
@@ -30,4 +32,6 @@ std::vector<ALint> AudioGen::getSample(AudioGen::wave type, int sampleRate, int 
                 output.push_back(AudioGen::noiseWave(sampleRate, i));
             break;
     }
+
+    return output;
 }

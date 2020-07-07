@@ -157,7 +157,8 @@ void APU::Square::step() {
     if (stepCounter % 16384 == 0)
         lengthClock();
     if ((stepCounter - 2) & 32768 == 0)
-        sweepClock();
+        if (sweep)
+            sweepClock();
     if ((stepCounter - 1) & 65536 == 0)
         volEnvClock();
 
@@ -182,7 +183,7 @@ void APU::Square::outputClock() {
         getValues();
         double amp = amplitude / 15.0;
 
-        std::vector<ALint> samples = AudioGen::getSample(AudioGen::Square, sampleRate, freq, amplitude, duty)
+        std::vector<ALint> samples = AudioGen::getSample(AudioGen::Square, sampleRate, freq, amplitude, duty);
     }
 }
 
@@ -196,6 +197,15 @@ void APU::Square::lengthClock() {
     if (lengthCounter == 0)
         lengthCounterDisable = true;
 }
+
+void APU::Square::volEnvClock() {
+    // TODO: Implement volume
+}
+
+void APU::Square::sweepClock() {
+    // TODO: Implement sweep
+}
+
 // #### Waveform Channel ####
 
 APU::Wave::Wave(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress) {
