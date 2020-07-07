@@ -1,18 +1,25 @@
 #include "audio.hpp"
 
-const uint16_t volumeRegister       = 0xFF24;
-const uint16_t squareWaveRegister1  = 0xFF10;
-const uint16_t squareWaveRegister2  = 0xFF15;
-const uint16_t waveRegister         = 0xFF1A;
-const uint16_t noiseRegister        = 0xFF1F;
-const uint16_t waveTableRegister    = 0xFF30;
-
-
 APU::Audio::Audio(MemoryBus * memoryBus) {
-    square1 = new Square(memoryBus, squareWaveRegister1, true);
-    square2 = new Square(memoryBus, squareWaveRegister2, false);
-    wave = new Wave(memoryBus, waveRegister);
-    noise = new Noise(memoryBus, noiseRegister);
+    // OpenAL
+    device = alcOpenDevice(nullptr);
+
+    if (device) {
+        context = alcCreateContext(device, nullptr);
+        alcMakeContextCurrent(context);
+    }
+
+    // Clear error code
+    alGetError();
+
+    // Set static audio
+    alListener3f(AL_POSITION, 0, 0, 0);
+    alListener3f(AL_VELOCITY, 0, 0, 0);
+
+    square1 = new Square(device, memoryBus, SQUARE_WAVE_REGISTER_1, true);
+    square2 = new Square(device, memoryBus, SQUARE_WAVE_REGISTER_2, false);
+    wave = new Wave(device, memoryBus, WAVE_REGISTER);
+    noise = new Noise(device, memoryBus, NOISE_REGISTER);
 }
 
 APU::Audio::~Audio(){
@@ -27,25 +34,6 @@ APU::Audio::~Audio(){
     delete noise;
 }
 
-APU::Square::Square(MemoryBus * memBus, const uint16_t memAddr, bool swp) {
-    memoryBus = memBus;
-    memoryAddress = memAddr;
-    sweep = swp;
-
-    // clear error code
-    alGetError();
-    
-    alGenBuffers(bufferSize, buffers);
-    if ((error = alGetError()) != AL_NO_ERROR) {
-        std::cerr << "OpenAL Error: alGenBuffers:" << error << std::endl;
-        return;
-    }
-
-    // Set static audio
-    alListener3f(AL_POSITION, 0, 0, 0);
-    alListener3f(AL_VELOCITY, 0, 0, 0);
-}
-
 void APU::Audio::step() {
     square1->step();
     square2->step();
@@ -54,6 +42,30 @@ void APU::Audio::step() {
 // #### OpenAL Source ####
 
 APU::Source::Source() {
+    genBuffers();
+    genSources();
+
+    alSource3f(*source, AL_POSITION, 0, 0, 0);
+    alSource3f(*source, AL_VELOCITY, 0, 0, 0);
+
+    alcGetIntegerv(device, ALC_FREQUENCY, 1, sampleRate);
+}
+
+APU::Source::~Source() {
+    alDeleteSources(1, source);
+}
+
+void APU::Source::genBuffers() {
+    ALenum error;
+    
+    alGenBuffers(bufferSize, buffers);
+    if ((error = alGetError()) != AL_NO_ERROR) {
+        std::cerr << "OpenAL Error: alGenBuffers:" << error << std::endl;
+        return;
+    }
+}
+
+void APU::Source::genSources() {
     ALenum error;
 
     alGenSources(1, source);
@@ -61,12 +73,6 @@ APU::Source::Source() {
         std::cerr << "OpenAL Error: alGenSources:" << error << std::endl;
         return;
     }
-
-    alcGetIntegerv(device, ALC_FREQUENCY, 1, sampleRate);
-}
-
-APU::Source::~Source() {
-    alDeleteSources(1, source);
 }
 
 // #### Square Wave Channel ####
@@ -82,6 +88,7 @@ APU::Square::Square(ALCdevice * device, MemoryBus * memoryBus, const uint16_t me
     getValues();
 
     timerCounter = 2048 - freq;
+    lengthCounter = lengthLoad;
 }
 
 APU::Square::~Square() {
@@ -106,6 +113,7 @@ void APU::Square::getValues() {
 }
 
 void APU::Square::step() {
+    // TODO: Add multithreading to ensure timing accuracy
     // Timer
 
     if (fiveBitCounter == 0)
@@ -116,6 +124,9 @@ void APU::Square::step() {
 
     if (fiveBitCounter == 31)
         fiveBitCounter = 0;
+
+    // Counters
+
 }
 
 void APU::Square::timer() {
@@ -144,7 +155,7 @@ APU::Wave::~Wave() {
 void APU::Wave::loadSamples(){
     uint8_t sampleByte;
     for (int i = 0; i < 32; i += 2) {
-        sampleByte = memoryBus->readByte(waveTableRegister + i);
+        sampleByte = memoryBus->readByte(WAVE_TABLE_REGISTER + i);
         samples[i] = (sampleByte & 240) >> 4;
         samples[i+1] = sampleByte & 15;
     }
@@ -160,7 +171,7 @@ void APU::Wave::getValues() {
     freqMSB         = (memoryBus->readByte(memoryAddress + 4) & 0b00000111) >> 0;
 }
 
-APU::Noise::Noise(MemoryBus * memBus, const uint16_t memAddr) {
+APU::Noise::Noise(ALCdevice * device, MemoryBus * memBus, const uint16_t memAddr) {
     memoryBus = memBus;
     memoryAddress = memAddr;
 }
