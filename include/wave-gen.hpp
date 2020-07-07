@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <vector>
 
+#include <AL/al.h>
+
 const short MAX_AMPLITUDE = 32767;
 const int CPU_FREQUENCY = 4194304;
 
@@ -12,5 +14,5 @@ namespace AudioGen {
 
     enum wave{Square, Noise};
 
-    std::vector<uint16_t> getSample(wave type, int sampleRate, int frequency, double amplitude, double duty);
+    std::vector<ALint> getSample(wave type, int sampleRate, int frequency, double amplitude, double duty);
 }

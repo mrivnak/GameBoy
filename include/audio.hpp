@@ -76,6 +76,9 @@ class APU::Square : private APU::Source {
         void getValues();
         void timer();
         void outputClock();
+        void lengthClock();
+        void volEnvClock();
+        void sweepClock();
 
         bool negate;
         bool envAddMode;
@@ -85,7 +88,7 @@ class APU::Square : private APU::Source {
         uint8_t
             sweepPeriod,
             shift, 
-            duty,
+            dutyCode,
             lengthLoad,
             startVol,
             period,
@@ -94,10 +97,14 @@ class APU::Square : private APU::Source {
         ;
 
         uint16_t freq;
+        double duty;
+        double amplitude;
 
+        unsigned int stepCounter;
         unsigned int fiveBitCounter;
         unsigned int timerCounter;
         unsigned int lengthCounter;
+        bool lengthCounterDisable;
 };
 
 class APU::Wave : private APU::Source {
