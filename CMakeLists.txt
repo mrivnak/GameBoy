@@ -15,7 +15,6 @@ SET(SOURCE_FILES
     src/instructions.cpp
     src/termdebug.cpp
     src/display.cpp
-    src/audio.cpp
     src/bitmap.cpp
     src/texture.cpp
 )
