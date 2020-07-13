@@ -1,170 +1,206 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <iostream>
 
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_audio.h>
 
 #include "memory-bus.hpp"
 
-const uint16_t VOLUME_REGISTER          = 0xFF24;
-const uint16_t SQUARE_WAVE_REGISTER_1   = 0xFF10;
-const uint16_t SQUARE_WAVE_REGISTER_2   = 0xFF15;
-const uint16_t WAVE_REGISTER            = 0xFF1A;
-const uint16_t NOISE_REGISTER           = 0xFF1F;
-const uint16_t WAVE_TABLE_REGISTER      = 0xFF30;
+const short SOUND_DESYNC_THRESHOLD = 5;
+const int CPU_FREQ = 4213440;
 
 namespace APU {
-    class Audio;
-    class Source;
+    class Sound;
     class Square;
+    class Sweep;
     class Wave;
     class Noise;
 }
 
-class APU::Audio {
+class APU::Sound {
     public:
-        Audio(MemoryBus * memoryBus);
-        ~Audio();
+        Sound(MemoryBus * memoryBus);
+        ~Sound();
 
-        void step();
+        void sync();
+
     private:
-        // OpenAL
-        ALCdevice * device;
-        ALCcontext * context;
-        ALuint * listener;
+        SDL_AudioSpec want;
+        SDL_AudioSpec have;
+        SDL_AudioDeviceID device;
 
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
+        int sampleRate;
+        int sampleClocks;
+        std::array<uint8_t, 4096> audioBuffer;
+        int clock;
 
-        Square * square1;
-        Square * square2;
+        Sweep * sweep;
+        Square * square;
         Wave * wave;
         Noise * noise;
 };
 
-class APU::Source {
+class APU::Square {
     public:
-        Source();
-        ~Source();
-    protected:
-        // OpenAL
-        ALCdevice * device;
-        ALuint * source;
-        ALsizei bufferSize = 4096;
-        ALuint * buffers;
-        ALint * sampleRate;
-
-        void genBuffers();
-        void genSources();
-};
-
-class APU::Square : private APU::Source {
-    public:
-        Square(ALCdevice * device, MemoryBus * memoryBus, const uint16_t memoryAddress, bool sweep);
+        Square(MemoryBus * memoryBus);
         ~Square();
 
-        void step();
-    private:
-        unsigned int sampleRate;
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
-        bool sweep;
-
         void getValues();
-        void timer();
-        void outputClock();
-        void lengthClock();
-        void volEnvClock();
-        void sweepClock();
 
-        bool negate;
-        bool envAddMode;
-        bool trigger;
-        bool lengthEnable;
+        void run(int clocks);
+        void tickFrame();
 
-        uint8_t
-            sweepPeriod,
-            shift, 
-            dutyCode,
-            lengthLoad,
+        int sample();
+        void triggerEvent();
+
+    protected:
+        const std::array<std::array<int, 8>, 4> waveTables {{
+            {0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 1, 1, 1},
+            {0, 1, 1, 1, 1, 1, 1, 0}
+        }};
+        int
+            waveSelect,
+            length,
             startVol,
-            period,
-            freqLSB,
-            freqMSB
+            envelopePeriod,
+            sendPeriod
         ;
 
-        uint16_t freq;
-        double duty;
-        double amplitude;
+        bool
+            envAddMode,
+            trigger,
+            lengthEnable
+        ;
 
-        unsigned int stepCounter;
-        unsigned int fiveBitCounter;
-        unsigned int timerCounter;
-        unsigned int lengthCounter;
-        bool lengthCounterDisable;
+        int
+            enable,
+            lengthTimer,
+            periodTimer,
+            envelopeTimer,
+            period,
+            waveFrame,
+            frameTimer,
+            frame,
+            volume
+        ;
 };
 
-class APU::Wave : private APU::Source {
+class APU::Sweep : public APU::Square {
     public:
-        Wave(ALCdevice * device, MemoryBus * memBus, const uint16_t memAddr);
+        Sweep(MemoryBus * memoryBus);
+        ~Sweep();
+
+        bool sweep(bool save);
+
+        void getValues();
+        void tickFrame();
+        void triggerEvent();
+    
+    private:
+        int
+            sweepPeriod,
+            sweepDir,
+            sweepShift
+        ;
+
+        int
+            sweepTimer,
+            sweepEnable,
+            sweepShadow
+        ;
+};
+
+class APU::Wave {
+    public:
+        Wave(MemoryBus * memoryBus);
         ~Wave();
 
-        void step();
-    private:
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
-
-        std::array<uint8_t, 32> samples;
-        void loadSamples();
-
         void getValues();
 
-        bool DACPower;
-        bool trigger;
-        bool lengthEnable;
+        void getWaveTable();
 
-        uint8_t
-            lengthLoad,
+        void run(int clocks);
+        void tickFrame();
+
+        int sample();
+        void triggerEvent();
+
+    private:
+        std::array<uint8_t, 16> waveTable;
+
+        int
+            length,
             volumeCode,
-            freqLSB,
-            freqMSB
+            sendPeriod
         ;
 
-        uint16_t freq;
+        bool
+            DACPower,
+            trigger,
+            lengthEnable
+        ;
 
-        void stepFrameCounter();
-        void clockLengthCtr();
+        int
+            lengthTimer,
+            periodTimer,
+            period,
+            waveFrame,
+            frameTimer,
+            frame,
+            volumeShift
+        ;
 
-        unsigned int stepCounter;
-        unsigned int slowStepCounter;
+        bool enable;
 };
 
-class APU::Noise : private APU::Source {
+class APU::Noise {
     public:
-        Noise(ALCdevice * device, MemoryBus * memBus, const uint16_t memAddr);
+        Noise(MemoryBus * memoryBus);
         ~Noise();
 
-        void step();
-    private:
-        unsigned int sampleRate;
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
+        const std::array<int, 8> DIV_TABLE {{8, 16, 32, 48, 64, 80, 96, 112}};
 
         void getValues();
 
-        bool envAddMode;
-        bool LFSRWidth;
-        bool trigger;
-        bool lengthEnable;
+        void run(int clocks);
+        void tickFrame();
 
-        uint8_t
-            lengthLoad,
+        uint16_t sample();
+        void triggerEvent();
+
+    private:
+        int
+            length,
             startVol,
-            period,
+            envelopePeriod,
             clockShift,
-            divisorCode
+            divisor
         ;
+            
+        bool
+            envAddMode,
+            LFSRWidth,
+            trigger,
+            lengthEnable
+        ;
+        
+        int
+            lengthTimer,
+            periodTimer,
+            envelopeTimer,
+            period,
+            shiftRegister,
+            LFSRFeed,
+            frameTimer,
+            frame,
+            volume
+        ;
+
+        bool enable;
 };

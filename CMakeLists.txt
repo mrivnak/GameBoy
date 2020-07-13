@@ -16,7 +16,6 @@ SET(SOURCE_FILES
     src/termdebug.cpp
     src/display.cpp
     src/audio.cpp
-    src/wave-gen.cpp
     src/bitmap.cpp
     src/texture.cpp
 )
