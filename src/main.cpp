@@ -12,12 +12,10 @@
 #include <GL/gl.h>
 #include <cxxopts.hpp>
 
-#include "processor.hpp"
+#include "motherboard.hpp"
 
 #include "bitmap.hpp"
 #include "texture.hpp"
-
-#define BOOT_ROM_SIZE 0xFF
 
 #ifdef main
 #undef main
@@ -66,6 +64,8 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
+	// TODO: 
+	/*
 	std::FILE* game_file = std::fopen(game_filename.c_str(), "r");
 
 	if (!game_file) {
@@ -73,8 +73,6 @@ int main(int argc, char** argv) {
 		std::cerr << "Filename: " << game_filename << std::endl;
 		return 1;
 	}
-
-	Processor processor;
 
 	std::FILE* boot_file = std::fopen("../res/DMG_ROM.bin", "r");
 
@@ -100,14 +98,15 @@ int main(int argc, char** argv) {
 	};
 
 	std::memcpy(processor.getMemory().getData(), TEST_PROGRAM, sizeof(TEST_PROGRAM));
+	*/
+
+	Motherboard motherboard;
+
+	motherboard.loadFile("../res/DMG_ROM.bin");
 
 	Application app;
 	Window& window = app.createWindow("Gameboy Emulator", 800, 600);
 	auto& renderDevice = window.getRenderDevice();
-
-	if (DEBUG) {
-		TermDebug::printDebug(&processor.getRegisters());
-	}
 
 	Bitmap bmp(64, 64);
 	auto data = bmp.getData();
@@ -126,7 +125,7 @@ int main(int argc, char** argv) {
 		app.pollEvents();
 
 		// processor exec is going in here for now
-		processor.step();
+		motherboard.clock();
 
 		renderDevice.clear();
 		renderDevice.drawTexturedQuad(tex);

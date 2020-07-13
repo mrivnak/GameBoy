@@ -11,23 +11,25 @@ Processor::Processor()
 
 void Processor::step() {
 	if (yieldCycles == 0) {
-		uint8_t ib = memory.readByte(pc);
-		bool prefixByte = ib == Instructions::PREFIX_BYTE;
+		uint8_t instructionByte = memory.readByte(pc);
+		bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
 
 		if (prefixByte) {
-			ib = memory.readByte(pc + 1);
+			instructionByte = memory.readByte(pc + 1);
 		}
 
-		if (auto instruction = Instructions::ref().fetchInstruction(ib, prefixByte)) {
-			pc = instruction(pc, yieldCycles, registers, memory);
+		if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {
+			instruction(pc, yieldCycles, registers, memory);
 		}
 		else {
 			fprintf(stderr, "Invalid instruction: 0x%s%X\n",
-					prefixByte ? "CB" : "", ib);
+					prefixByte ? "CB" : "", instructionByte);
 		}
+
+		pc++;
 	}
 
-	--yieldCycles;
+	yieldCycles--;
 }
 
 MemoryBus& Processor::getMemory() {

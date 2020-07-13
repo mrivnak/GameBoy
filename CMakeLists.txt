@@ -11,6 +11,7 @@ SET(SOURCE_FILES
     src/render-device.cpp
     src/registers.cpp
     src/memory-bus.cpp
+    src/motherboard.cpp
     src/processor.cpp
     src/instructions.cpp
     src/termdebug.cpp

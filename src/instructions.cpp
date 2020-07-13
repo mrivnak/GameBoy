@@ -8,10 +8,10 @@
 namespace {
 	using Instruction = Instructions::Instruction;
 
-	uint16_t op_JR(uint16_t pc, uint8_t& cycles, bool cond, int8_t r8);
+	uint16_t op_JR(uint16_t& pc, uint8_t& cycles, bool cond, int8_t r8);
 
-	uint16_t op_INC8(uint16_t pc, uint8_t& cycles, uint8_t& r, Registers& rs);
-	uint16_t op_INC16(uint16_t pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow);
+	uint16_t op_INC8(uint16_t& pc, uint8_t& cycles, uint8_t& r, Registers& rs);
+	uint16_t op_INC16(uint16_t& pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow);
 };
 
 Instructions::Instructions() {
@@ -19,15 +19,13 @@ Instructions::Instructions() {
 	initNonPrefixed();
 }
 
-Instruction Instructions::fetchInstruction(uint8_t ib, bool prefixByte) {
-	const uint8_t high = (ib & 0xF0) >> 4;
-	const uint8_t low = ib & 0x0F;
-
+Instruction Instructions::fetchInstruction(const uint8_t instructionByte, bool prefixByte) {
 	if (prefixByte) {
-		return prefixed[high][low];
+		return prefixed[instructionByte];
 	}
-
-	return nonPrefixed[high][low];
+	else {
+		return nonPrefixed[instructionByte];
+	}
 }
 
 Instructions::~Instructions() {
@@ -37,89 +35,91 @@ void Instructions::initPrefixed() {
 }
 
 void Instructions::initNonPrefixed() {
-	nonPrefixed[0x0][0x0] = [](uint16_t pc, uint8_t& cycles, Registers&, MemoryBus&) {
-		puts("NOP");
-		cycles = 4;
-		return pc + 1;
+	nonPrefixed[0x00] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;  // 4 ticks
+		pc += 1;  // 1 byte
 	}; // NOP
+	nonPrefixed[0x01] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 12;
+		reg.setBC = ((uint16_t) mem.getData(pc + 1) << 4) + mem.getData(pc + 2);
+		pc += 3;
+	}; // LD BC,u16
 
-	nonPrefixed[0x1][0x0] = [](uint16_t pc, uint8_t& cycles, Registers&, MemoryBus&) {
-		puts("STOP");
+	nonPrefixed[0x10] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 4;
-		return pc + 1;
 	}; // STOP
 
 	// 16 bit increments
-	nonPrefixed[0x0][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC16(pc, cycles, r.b, r.c);
+	nonPrefixed[0x03] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC16(pc, cycles, r.b, r.c);
 	}; // INC BC
-	nonPrefixed[0x1][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC16(pc, cycles, r.d, r.e);
+	nonPrefixed[0x13] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		op_INC16(pc, cycles, r.d, r.e);
 	}; // INC DE
-	nonPrefixed[0x2][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC16(pc, cycles, r.h, r.l);
+	nonPrefixed[0x23] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		op_INC16(pc, cycles, r.h, r.l);
 	}; // INC HL
-	nonPrefixed[0x3][0x3] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+	nonPrefixed[0x33] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
 		uint8_t hi = (r.sp & 0xF0) >> 8;
 		uint8_t lo = r.sp & 0x0F;
 
-		pc = op_INC16(pc, cycles, hi, lo);
+		op_INC16(pc, cycles, hi, lo);
 		r.sp = (static_cast<uint16_t>(hi) << 8) | static_cast<uint16_t>(lo);
 
-		return pc;
+		pc;
 	}; // INC SP
 
 	// 8 bit increments
-	nonPrefixed[0x0][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.b, r);
+	nonPrefixed[0x04] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC8(pc, cycles, r.b, r);
 	}; // INC B
-	nonPrefixed[0x1][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.d, r);
+	nonPrefixed[0x14] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC8(pc, cycles, r.d, r);
 	}; // INC D
-	nonPrefixed[0x2][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.h, r);
+	nonPrefixed[0x24] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC8(pc, cycles, r.h, r);
 	}; // INC H
-	/*nonPrefixed[0x3][0x4] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.b);
+	/*nonPrefixed[0x3][0x4] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+		op_INC8(pc, cycles, r.b);
 	}; // INC (HL) */ // TODO: figure this out
 
-	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.c, r);
+	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC8(pc, cycles, r.c, r);
 	}; // INC C
-	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.e, r);
+	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC8(pc, cycles, r.e, r);
 	}; // INC E
-	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.l, r);
+	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC8(pc, cycles, r.l, r);
 	}; // INC L
-	nonPrefixed[0x0][0xC] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		return op_INC8(pc, cycles, r.a, r);
+	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC8(pc, cycles, r.a, r);
 	}; // INC A
 	
 	// Jump Relative
-	nonPrefixed[0x2][0x0] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus& mem) {
-		return ::op_JR(pc, cycles, !r.isZero(), static_cast<int8_t>(mem[pc + 1]));
+	nonPrefixed[0x20] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_JR(pc, cycles, !r.isZero(), static_cast<int8_t>(mem[pc + 1]));
 	}; // JR NZ, r8
 
-	nonPrefixed[0x3][0x0] = [](uint16_t pc, uint8_t& cycles, Registers& r, MemoryBus& mem) {
-		return ::op_JR(pc, cycles, !r.isCarry(), static_cast<int8_t>(mem[pc + 1]));
+	nonPrefixed[0x30] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_JR(pc, cycles, !r.isCarry(), static_cast<int8_t>(mem[pc + 1]));
 	}; // JR NC, r8
 }
 
 namespace {
-	uint16_t op_JR(uint16_t pc, uint8_t& cycles, bool cond, int8_t r8) {
+	uint16_t op_JR(uint16_t& pc, uint8_t& cycles, bool cond, int8_t r8) {
 		printf("JR %d\n", r8);
 
 		if (cond) {
 			cycles = 12;
-			return pc + 2 + r8;
+			pc += 2 + r8;
 		}
 
 		cycles = 8;
-		return pc + 2;
+		pc += 2;
 	}
 
-	uint16_t op_INC8(uint16_t pc, uint8_t& cycles, uint8_t& r, Registers& rs) {
+	uint16_t op_INC8(uint16_t& pc, uint8_t& cycles, uint8_t& r, Registers& rs) {
 		puts("INC8");
 
 		rs.setHalfCarry(r == 0xFF);
@@ -129,10 +129,10 @@ namespace {
 		++r;
 
 		cycles = 4;
-		return pc + 1;
+		pc++;
 	}
 
-	uint16_t op_INC16(uint16_t pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow) {
+	uint16_t op_INC16(uint16_t& pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow) {
 		puts("INC16");
 
 		uint16_t value = (static_cast<uint16_t>(rHigh) << 8) | rLow;
@@ -143,6 +143,6 @@ namespace {
 		rLow = static_cast<uint8_t>(value & 0xFF);
 
 		cycles = 8;
-		return pc + 1;
+		pc++;
 	}
 };
