@@ -41,43 +41,45 @@ void Instructions::initNonPrefixed() {
 	}; // NOP
 	nonPrefixed[0x01] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
-		reg.setBC = ((uint16_t) mem.getData(pc + 1) << 4) + mem.getData(pc + 2);
+		reg.setBC(((uint16_t) mem.readByte(pc + 1) << 4) + mem.readByte(pc + 2));
 		pc += 3;
 	}; // LD BC,u16
 
-	nonPrefixed[0x10] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
-		cycles = 4;
-	}; // STOP
+	nonPrefixed[0x02] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+		reg.setBC8(*reg.getA());
+		pc += 1;
+	}; // LD (BC),a
 
 	// 16 bit increments
 	nonPrefixed[0x03] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
-		op_INC16(pc, cycles, r.b, r.c);
+		op_INC16(pc, cycles, *reg.getB(), *reg.getC());
 	}; // INC BC
-	nonPrefixed[0x13] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		op_INC16(pc, cycles, r.d, r.e);
+	nonPrefixed[0x13] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC16(pc, cycles, *reg.getD(), *reg.getE());
 	}; // INC DE
-	nonPrefixed[0x23] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		op_INC16(pc, cycles, r.h, r.l);
+	nonPrefixed[0x23] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		op_INC16(pc, cycles, *reg.getH(), *reg.getL());
 	}; // INC HL
-	nonPrefixed[0x33] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
-		uint8_t hi = (r.sp & 0xF0) >> 8;
-		uint8_t lo = r.sp & 0x0F;
+	nonPrefixed[0x33] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		uint8_t hi = (reg.sp & 0xF0) >> 8;
+		uint8_t lo = reg.sp & 0x0F;
 
 		op_INC16(pc, cycles, hi, lo);
-		r.sp = (static_cast<uint16_t>(hi) << 8) | static_cast<uint16_t>(lo);
+		reg.sp = (static_cast<uint16_t>(hi) << 8) | static_cast<uint16_t>(lo);
 
 		pc;
 	}; // INC SP
 
 	// 8 bit increments
 	nonPrefixed[0x04] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
-		op_INC8(pc, cycles, r.b, r);
+		op_INC8(pc, cycles, reg.b, reg);
 	}; // INC B
 	nonPrefixed[0x14] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
-		op_INC8(pc, cycles, r.d, r);
+		op_INC8(pc, cycles, reg.d, reg);
 	}; // INC D
 	nonPrefixed[0x24] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
-		op_INC8(pc, cycles, r.h, r);
+		op_INC8(pc, cycles, reg.h, reg);
 	}; // INC H
 	/*nonPrefixed[0x3][0x4] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
 		op_INC8(pc, cycles, r.b);

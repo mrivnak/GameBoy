@@ -18,6 +18,20 @@ struct Registers {
 	void setDE(uint16_t value);
 	void setHL(uint16_t value);
 
+	void setAF8(uint8_t value);
+	void setBC8(uint8_t value);
+	void setDE8(uint8_t value);
+	void setHL8(uint8_t value);
+
+	void setA(uint8_t value);
+	void setF(uint8_t value);
+	void setB(uint8_t value);
+	void setC(uint8_t value);
+	void setD(uint8_t value);
+	void setE(uint8_t value);
+	void setH(uint8_t value);
+	void setL(uint8_t value);
+
 	void setZero(bool zero);
 	void setSubtract(bool subtract);
 	void setHalfCarry(bool halfCarry);
@@ -25,25 +39,26 @@ struct Registers {
 
 	void setFlag(uint8_t flag, bool set);
 
-	uint16_t getAF() const;
-	uint16_t getBC() const;
-	uint16_t getDE() const;
-	uint16_t getHL() const;
+	uint16_t * getAF();
+	uint16_t * getBC();
+	uint16_t * getDE();
+	uint16_t * getHL();
+
+	uint8_t * getA();
+	uint8_t * getF();
+	uint8_t * getB();
+	uint8_t * getC();
+	uint8_t * getD();
+	uint8_t * getE();
+	uint8_t * getH();
+	uint8_t * getL();
 
 	bool isZero() const;
 	bool isSubtract() const;
 	bool isHalfCarry() const;
 	bool isCarry() const;
 
-	// TODO: see if these should be zeroed 
-	uint8_t a;
-	uint8_t b;
-	uint8_t c;
-	uint8_t d;
-	uint8_t e;
-	uint8_t f;
-	uint8_t h;
-	uint8_t l;
+	uint8_t regs[8]; // a, f, b, c, d, e, h, l
 
 	uint8_t flags = 0;
 

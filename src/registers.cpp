@@ -1,23 +1,39 @@
 #include "registers.hpp"
 
 void Registers::setAF(uint16_t value) {
-	a = static_cast<uint8_t>((value & 0xFF00) >> 8);
-	f = static_cast<uint8_t>(value & 0xFF);
+	regs[0] = (uint8_t) (value >> 8);
+    regs[1] = (uint8_t) value;
 }
 
 void Registers::setBC(uint16_t value) {
-	b = static_cast<uint8_t>((value & 0xFF00) >> 8);
-	c = static_cast<uint8_t>(value & 0xFF);
+	regs[2] = (uint8_t) (value >> 8);
+    regs[3] = (uint8_t) value;
 }
 
 void Registers::setDE(uint16_t value) {
-	d = static_cast<uint8_t>((value & 0xFF00) >> 8);
-	e = static_cast<uint8_t>(value & 0xFF);
+	regs[4] = (uint8_t) (value >> 8);
+    regs[5] = (uint8_t) value;
 }
 
 void Registers::setHL(uint16_t value) {
-	h = static_cast<uint8_t>((value & 0xFF00) >> 8);
-	l = static_cast<uint8_t>(value & 0xFF);
+	regs[6] = (uint8_t) (value >> 8);
+    regs[7] = (uint8_t) value;
+}
+
+void Registers::setAF8(uint8_t value) {
+	regs[0] = value;
+}
+
+void Registers::setBC8(uint8_t value) {
+	regs[2] = value;
+}
+
+void Registers::setDE8(uint8_t value) {
+	regs[4] = value;
+}
+
+void Registers::setHL8(uint8_t value) {
+	regs[6] = value;
 }
 
 void Registers::setZero(bool zero) {
@@ -61,18 +77,50 @@ bool Registers::isCarry() const {
 	return flags & Flags::FLAG_CARRY;
 }
 
-uint16_t Registers::getAF() const {
-	return ((uint16_t)a << 8) | f;
+uint16_t * Registers::getAF() {
+	return (uint16_t*) &regs;
 }
 
-uint16_t Registers::getBC() const {
-	return ((uint16_t)b << 8) | c;
+uint16_t * Registers::getBC() {
+	return (uint16_t*) (&regs + 2);
 }
 
-uint16_t Registers::getDE() const {
-	return ((uint16_t)d << 8) | e;
+uint16_t * Registers::getDE() {
+	return (uint16_t*) (&regs + 2);
 }
 
-uint16_t Registers::getHL() const {
-	return ((uint16_t)h << 8) | l;
+uint16_t * Registers::getHL() {
+	return (uint16_t*) (&regs + 2);
+}
+
+uint8_t * Registers::getA() {
+	return regs[0];
+}
+
+uint8_t * Registers::getF() {
+	return regs[1];
+}
+
+uint8_t * Registers::getB() {
+	return regs[2];
+}
+
+uint8_t * Registers::getC() {
+	return regs[3];
+}
+
+uint8_t * Registers::getD() {
+	return regs[4];
+}
+
+uint8_t * Registers::getE() {
+	return regs[5];
+}
+
+uint8_t * Registers::getH() {
+	return regs[6];
+}
+
+uint8_t * Registers::getL() {
+	return regs[7];
 }

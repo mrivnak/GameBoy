@@ -25,8 +25,6 @@ void Processor::step() {
 			fprintf(stderr, "Invalid instruction: 0x%s%X\n",
 					prefixByte ? "CB" : "", instructionByte);
 		}
-
-		pc++;
 	}
 
 	yieldCycles--;
