@@ -10,11 +10,11 @@ Processor::Processor() {
 
 void Processor::step() {
 	if (cycles == 0) {
-		uint8_t instructionByte = memory.readByte(pc);
+		uint8_t instructionByte = memory.read(registers.PC);
 		bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
 
 		if (prefixByte) {
-			instructionByte = memory.readByte(pc + 1);
+			instructionByte = memory.read(registers.PC + 1);
 		}
 
 		if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {

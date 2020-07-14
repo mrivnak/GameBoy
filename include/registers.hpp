@@ -27,4 +27,16 @@ struct Registers {
 	uint16_t PC;
 	uint16_t SP;
 
+	void setZero(bool zero);
+	void setNegative(bool negative);
+	void setHalfCarry(bool halfCarry);
+	void setCarry(bool carry);
+
+	void setFlag(uint8_t flag, bool set);
+
+	bool getZero() const;
+	bool getNegative() const;
+	bool getHalfCarry() const;
+	bool getCarry() const;
+
 };

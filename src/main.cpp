@@ -2,8 +2,6 @@
 #include "window.hpp"
 #include "render-device.hpp"
 
-#include "termdebug.hpp"
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>

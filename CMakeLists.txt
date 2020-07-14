@@ -5,20 +5,20 @@ PROJECT(GameBoy)
 SET(CMAKE_CXX_STANDARD 17)
 
 SET(SOURCE_FILES
-    src/application.cpp
+	src/application.cpp
 #   src/audio.cpp
-    src/bitmap.cpp
-    src/display.cpp
-    src/main.cpp
-    src/memory-bus.cpp
-    src/motherboard.cpp
-    src/processor.cpp
-    src/registers.cpp
-    src/render-device.cpp
-    src/instructions.cpp
-    src/termdebug.cpp
-    src/texture.cpp
-    src/window.cpp
+	src/bitmap.cpp
+	src/display.cpp
+	src/main.cpp
+	src/memory-bus.cpp
+	src/motherboard.cpp
+	src/processor.cpp
+	src/registers.cpp
+	src/render-device.cpp
+	src/instructions.cpp
+#   src/termdebug.cpp
+	src/texture.cpp
+	src/window.cpp
 )
 
 SET(TEST_SOURCE_FILES

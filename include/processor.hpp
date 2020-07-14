@@ -19,7 +19,7 @@ class Processor final {
 	private:
 		Registers registers;
 
-		int cycles;
+		unsigned int cycles;
 
 		MemoryBus memory;
 

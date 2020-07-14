@@ -117,3 +117,12 @@ void MemoryBus::loadCartridge(Cartridge * cartridge) {
 void MemoryBus::loadDisplay(Display * display) {
 	this->display = display;
 }
+
+uint8_t MemoryBus::readIO(const uint16_t address) const {
+	// TODO: implement read I/O
+	return 0;
+}
+
+void MemoryBus::writeIO(const uint16_t address, const uint8_t byte) {
+	// TODO: implement write I/O
+}
