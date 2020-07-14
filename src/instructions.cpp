@@ -42,8 +42,8 @@ void Instructions::initNonPrefixed() {
 
 	nonPrefixed[0x01] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
-		reg.B = mem.readByte(reg.PC + 1);
-		reg.C = mem.readByte(reg.PC + 2);
+		reg.B = mem.read(reg.PC + 1);
+		reg.C = mem.read(reg.PC + 2);
 
 		reg.PC += 3;
 	}; // LD BC,u16
@@ -57,9 +57,12 @@ void Instructions::initNonPrefixed() {
 
 	nonPrefixed[0x03] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
+		// TODO: fix this
 		reg.setBC(*reg.getBC() + 1);
-		pc += 1;
+		reg.PC += 1;
 	}; // INC BC
+
+	// TODO: implement the rest of the instructions
 
 	nonPrefixed[0x04] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
@@ -72,7 +75,7 @@ void Instructions::initNonPrefixed() {
 		reg.setNegative(false);
 		// TODO: verify that flags are set correctly
 
-		pc += 1;
+		reg.PC += 1;
 	}; // INC B
 
 	/*
@@ -131,15 +134,15 @@ void Instructions::initNonPrefixed() {
 }
 
 namespace {
-	uint16_t op_JR(uint8_t& cycles, bool cond, int8_t r8) {
+	uint16_t op_JR(uint8_t& cycles, bool cond, int8_t r8, Registers& reg) {
 		printf("JR %d\n", r8);
 
 		if (cond) {
 			cycles = 12;
-			pc += 2 + r8;
+			reg.PC += 2 + r8;
 		}
 
 		cycles = 8;
-		pc += 2;
+		reg.PC += 2;
 	}
 };
