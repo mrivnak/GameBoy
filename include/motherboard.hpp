@@ -25,9 +25,14 @@ class Motherboard {
 
 		void loadBootROM();
 		void loadCartridge(std::string filename);
+		void loadMemory();
+
+		std::string getTitle();
 	private:
 		Processor processor;
+		MemoryBus * memoryBus;
 		Cartridge cartridge;
+		Display display;
 
 		std::vector<uint8_t> readFile(std::string filename);
 };

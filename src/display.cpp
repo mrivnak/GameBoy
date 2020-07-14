@@ -2,8 +2,10 @@
 
 #include "memory-bus.hpp"
 
-Display::Display(MemoryBus& memory)
-	: memory(&memory) {}
+Display::Display() {
+
+}
 
 Display::~Display() {
+
 }

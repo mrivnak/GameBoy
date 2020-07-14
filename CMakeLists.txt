@@ -8,7 +8,6 @@ SET(SOURCE_FILES
     src/application.cpp
 #   src/audio.cpp
     src/bitmap.cpp
-    src/cartridge.cpp
     src/display.cpp
     src/main.cpp
     src/memory-bus.cpp

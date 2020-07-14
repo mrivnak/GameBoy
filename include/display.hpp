@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 class MemoryBus;
@@ -67,10 +68,15 @@ Registers of interest (located within program memory)
 // TODO: figure out where registers SCROLLX and SCROLLY are
 class Display final {
 	public:
-		Display(MemoryBus& memory);
+		Display();
 
 		~Display();
+
+		std::array<std::array<uint8_t, 160>, 144> frameBuffer;
+		std::array<uint8_t, 0x2000> VRAM;
+		std::array<uint8_t, 0xA0> OAM;
+
+		bool VRAMEnable;
 	private:
-		MemoryBus* memory;
 		// TODO: null copy and assign
 };

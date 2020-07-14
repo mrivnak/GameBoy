@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
 	motherboard.loadCartridge(gameFilename);
 
 	Application app;
-	Window& window = app.createWindow("Gameboy Emulator", 800, 600);
+	Window& window = app.createWindow("WIT GBA - " + motherboard.getTitle(), 800, 600);
 	auto& renderDevice = window.getRenderDevice();
 
 	Bitmap bmp(64, 64);
