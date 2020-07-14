@@ -21,7 +21,7 @@
 #undef main
 #endif
 int main(int argc, char** argv) {
-	std::string game_filename;
+	std::string gameFilename;
 	bool DEBUG = false;
 
 	cxxopts::Options options("GameBoy", "Nintendo Game Boy emulator built in C++");
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 		}
 
 		if (result.count("f")) {
-			game_filename = result["f"].as<std::string>();
+			gameFilename = result["f"].as<std::string>();
 		}
 		else {
 			std::cerr << "No file specified! Exiting..." << std::endl;
@@ -59,18 +59,18 @@ int main(int argc, char** argv) {
 	// Filename related regex stuff
 	std::regex gb(".*.gb");
 
-	if (!std::regex_match(game_filename, gb)) {
+	if (!std::regex_match(gameFilename, gb)) {
 		std::cerr << "Invalid file extension. Only \".gb\" files are supported." << std::endl;
 		return 1;
 	}
 
 	// TODO: 
 	/*
-	std::FILE* game_file = std::fopen(game_filename.c_str(), "r");
+	std::FILE* game_file = std::fopen(gameFilename.c_str(), "r");
 
 	if (!game_file) {
 		std::perror("Failed to open game file");
-		std::cerr << "Filename: " << game_filename << std::endl;
+		std::cerr << "Filename: " << gameFilename << std::endl;
 		return 1;
 	}
 
@@ -102,7 +102,8 @@ int main(int argc, char** argv) {
 
 	Motherboard motherboard;
 
-	motherboard.loadFile("../res/DMG_ROM.bin");
+	motherboard.loadBootROM();
+	motherboard.loadCartridge(gameFilename);
 
 	Application app;
 	Window& window = app.createWindow("Gameboy Emulator", 800, 600);

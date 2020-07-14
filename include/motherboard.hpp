@@ -2,9 +2,13 @@
 
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
+#include <vector>
 
+#include "cartridge.hpp"
 #include "display.hpp"
 #include "memory-bus.hpp"
 #include "processor.hpp"
@@ -19,8 +23,11 @@ class Motherboard {
 
 		void clock();
 
-		void loadFile(std::string filename);
-		void loadData(void * data, int size);
+		void loadBootROM();
+		void loadCartridge(std::string filename);
 	private:
 		Processor processor;
+		Cartridge cartridge;
+
+		std::vector<uint8_t> readFile(std::string filename);
 };
