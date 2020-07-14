@@ -4,13 +4,12 @@
 
 #include <cstdio> // TODO: excise logging
 
-Processor::Processor()
-		: pc(0)
-		, yieldCycles(0) {
+Processor::Processor() {
+	cycles = 0;
 }
 
 void Processor::step() {
-	if (yieldCycles == 0) {
+	if (cycles == 0) {
 		uint8_t instructionByte = memory.readByte(pc);
 		bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
 
@@ -19,7 +18,7 @@ void Processor::step() {
 		}
 
 		if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {
-			instruction(pc, yieldCycles, registers, memory);
+			instruction(cycles, registers, memory);
 		}
 		else {
 			fprintf(stderr, "Invalid instruction: 0x%s%X\n",
@@ -27,7 +26,7 @@ void Processor::step() {
 		}
 	}
 
-	yieldCycles--;
+	cycles--;
 }
 
 MemoryBus& Processor::getMemory() {

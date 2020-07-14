@@ -8,10 +8,10 @@
 namespace {
 	using Instruction = Instructions::Instruction;
 
-	uint16_t op_JR(uint16_t& pc, uint8_t& cycles, bool cond, int8_t r8);
+	uint16_t op_JR(uint8_t& cycles, bool cond, int8_t r8);
 
-	uint16_t op_INC8(uint16_t& pc, uint8_t& cycles, uint8_t& r, Registers& rs);
-	uint16_t op_INC16(uint16_t& pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow);
+	uint16_t op_INC8(uint8_t& cycles, uint8_t& r, Registers& rs);
+	uint16_t op_INC16(uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow);
 };
 
 Instructions::Instructions() {
@@ -35,33 +35,50 @@ void Instructions::initPrefixed() {
 }
 
 void Instructions::initNonPrefixed() {
-	nonPrefixed[0x00] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x00] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 4;  // 4 ticks
-		pc += 1;  // 1 byte
+		reg.PC += 1;  // 1 byte
 	}; // NOP
-	nonPrefixed[0x01] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+
+	nonPrefixed[0x01] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 		reg.setBC(((uint16_t) mem.readByte(pc + 1) << 4) + mem.readByte(pc + 2));
-		pc += 3;
+		reg.PC += 3;
 	}; // LD BC,u16
 
-	nonPrefixed[0x02] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x02] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 		reg.setBC8(*reg.getA());
 		pc += 1;
 	}; // LD (BC),a
 
-	// 16 bit increments
-	nonPrefixed[0x03] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
-		op_INC16(pc, cycles, *reg.getB(), *reg.getC());
+	nonPrefixed[0x03] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+		reg.setBC(*reg.getBC() + 1);
+		pc += 1;
 	}; // INC BC
-	nonPrefixed[0x13] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+
+	nonPrefixed[0x04] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setHalfCarry(((*reg.getB() & 0xF) + (1 & 0xF)) & 0x10 == 0x10);
+
+		reg.setB(*reg.getB() + 1);
+
+		reg.setZero(*reg.getB() == 0);
+		reg.setNegative(false);
+
+		pc += 1;
+	}; // INC B
+
+	/*
+	nonPrefixed[0x13] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC16(pc, cycles, *reg.getD(), *reg.getE());
 	}; // INC DE
-	nonPrefixed[0x23] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x23] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC16(pc, cycles, *reg.getH(), *reg.getL());
 	}; // INC HL
-	nonPrefixed[0x33] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x33] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		uint8_t hi = (reg.sp & 0xF0) >> 8;
 		uint8_t lo = reg.sp & 0x0F;
 
@@ -72,44 +89,45 @@ void Instructions::initNonPrefixed() {
 	}; // INC SP
 
 	// 8 bit increments
-	nonPrefixed[0x04] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x04] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC8(pc, cycles, reg.b, reg);
 	}; // INC B
-	nonPrefixed[0x14] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x14] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC8(pc, cycles, reg.d, reg);
 	}; // INC D
-	nonPrefixed[0x24] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x24] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC8(pc, cycles, reg.h, reg);
 	}; // INC H
-	/*nonPrefixed[0x3][0x4] = [](uint16_t& pc, uint8_t& cycles, Registers& r, MemoryBus&) {
+	nonPrefixed[0x3][0x4] = [](uint8_t& cycles, Registers& r, MemoryBus&) {
 		op_INC8(pc, cycles, r.b);
-	}; // INC (HL) */ // TODO: figure this out
+	}; // INC (HL) // TODO: figure this out
 
-	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x0C] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC8(pc, cycles, r.c, r);
 	}; // INC C
-	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x0C] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC8(pc, cycles, r.e, r);
 	}; // INC E
-	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x0C] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC8(pc, cycles, r.l, r);
 	}; // INC L
-	nonPrefixed[0x0C] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x0C] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_INC8(pc, cycles, r.a, r);
 	}; // INC A
 	
 	// Jump Relative
-	nonPrefixed[0x20] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x20] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_JR(pc, cycles, !r.isZero(), static_cast<int8_t>(mem[pc + 1]));
 	}; // JR NZ, r8
 
-	nonPrefixed[0x30] = [](uint16_t& pc, uint8_t& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0x30] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		op_JR(pc, cycles, !r.isCarry(), static_cast<int8_t>(mem[pc + 1]));
 	}; // JR NC, r8
+	*/
 }
 
 namespace {
-	uint16_t op_JR(uint16_t& pc, uint8_t& cycles, bool cond, int8_t r8) {
+	uint16_t op_JR(uint8_t& cycles, bool cond, int8_t r8) {
 		printf("JR %d\n", r8);
 
 		if (cond) {
@@ -119,32 +137,5 @@ namespace {
 
 		cycles = 8;
 		pc += 2;
-	}
-
-	uint16_t op_INC8(uint16_t& pc, uint8_t& cycles, uint8_t& r, Registers& rs) {
-		puts("INC8");
-
-		rs.setHalfCarry(r == 0xFF);
-		rs.setSubtract(false);
-		rs.setZero(r == 0);
-
-		++r;
-
-		cycles = 4;
-		pc++;
-	}
-
-	uint16_t op_INC16(uint16_t& pc, uint8_t& cycles, uint8_t& rHigh, uint8_t& rLow) {
-		puts("INC16");
-
-		uint16_t value = (static_cast<uint16_t>(rHigh) << 8) | rLow;
-		
-		++value;
-
-		rHigh = static_cast<uint8_t>((value >> 8) & 0xFF);
-		rLow = static_cast<uint8_t>(value & 0xFF);
-
-		cycles = 8;
-		pc++;
 	}
 };

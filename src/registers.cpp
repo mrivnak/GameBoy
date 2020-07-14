@@ -40,8 +40,8 @@ void Registers::setZero(bool zero) {
 	setFlag(Flags::FLAG_CARRY, zero);
 }
 
-void Registers::setSubtract(bool subtract) {
-	setFlag(Flags::FLAG_SUBTRACT, subtract);
+void Registers::setNegative(bool negative) {
+	setFlag(Flags::FLAG_NEGATIVE, negative);
 }
 
 void Registers::setHalfCarry(bool halfCarry) {
@@ -65,8 +65,8 @@ bool Registers::isZero() const {
 	return flags & Flags::FLAG_ZERO;
 }
 
-bool Registers::isSubtract() const {
-	return flags & Flags::FLAG_SUBTRACT;
+bool Registers::isNegative() const {
+	return flags & Flags::FLAG_NEGATIVE;
 }
 
 bool Registers::isHalfCarry() const {
