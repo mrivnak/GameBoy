@@ -2,9 +2,6 @@
 
 #include <cstdlib>
 
-MemoryBus::MemoryBus()
-	: memory(static_cast<uint8_t*>(std::malloc(MEMORY_SIZE))) {}
-
 uint8_t MemoryBus::read(const uint16_t address) const {
 	switch (address) {
 		case 0x0000 ... 0x3FFF:
@@ -34,10 +31,6 @@ void MemoryBus::write(const uint16_t address, const uint8_t byte) {
 
 }
 
-uint8_t MemoryBus::operator[](uint16_t address) const {
-	return memory[address];
-}
-
 void MemoryBus::loadCartridge(Cartridge * cartridge) {
 	this->cartridge = cartridge;
 }
@@ -45,8 +38,3 @@ void MemoryBus::loadCartridge(Cartridge * cartridge) {
 void MemoryBus::loadDisplay(Display * display) {
 	this->display = display;
 }
-
-MemoryBus::~MemoryBus() {
-	std::free(memory);
-}
-

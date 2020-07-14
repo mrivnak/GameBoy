@@ -5,29 +5,23 @@
 #include "cartridge.hpp"
 #include "display.hpp"
 
-class MemoryBus final {
-	public:
-		static constexpr const uintptr_t MEMORY_SIZE = 0x10000;
+struct MemoryBus {
 
-		MemoryBus();
+	uint8_t read(const uint16_t address) const;
+	void write(const uint16_t address, const uint8_t byte);
 
-		uint8_t read(const uint16_t address) const;
-		void write(const uint16_t address, const uint8_t byte);
+	uint8_t operator[](const uint16_t address) const;
 
-		uint8_t operator[](uint16_t address) const;
+	void loadCartridge(Cartridge * cartridge);
+	void loadDisplay(Display * display);
 
-		void loadCartridge(Cartridge * cartridge);
-		void loadDisplay(Display * display);
+	std::array<uint8_t, 0x2000> WRAM;
+	std::array<uint8_t, 0x80> HRAM;
 
-		~MemoryBus();
-	private:
-		std::array<uint8_t, 0x2000> WRAM;
-		std::array<uint8_t, 0x80> HRAM;
+	Cartridge * cartridge;
+	Display * display;
 
-		Cartridge * cartridge;
-		Display * display;
+	bool ERAMEnable;
 
-		bool ERAMEnable;
-
-		// TODO: null copy and assign
+	// TODO: null copy and assign
 };
