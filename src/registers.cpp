@@ -2,22 +2,22 @@
 
 void Registers::setAF(uint16_t value) {
 	regs[0] = (uint8_t) (value >> 8);
-    regs[1] = (uint8_t) value;
+	regs[1] = (uint8_t) value;
 }
 
 void Registers::setBC(uint16_t value) {
 	regs[2] = (uint8_t) (value >> 8);
-    regs[3] = (uint8_t) value;
+	regs[3] = (uint8_t) value;
 }
 
 void Registers::setDE(uint16_t value) {
 	regs[4] = (uint8_t) (value >> 8);
-    regs[5] = (uint8_t) value;
+	regs[5] = (uint8_t) value;
 }
 
 void Registers::setHL(uint16_t value) {
 	regs[6] = (uint8_t) (value >> 8);
-    regs[7] = (uint8_t) value;
+	regs[7] = (uint8_t) value;
 }
 
 void Registers::setAF8(uint8_t value) {

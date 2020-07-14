@@ -13,14 +13,14 @@
 const int BOOT_ROM_SIZE = 0xFF;
 
 class Motherboard {
-    public:
-        Motherboard();
-        ~Motherboard();
+	public:
+		Motherboard();
+		~Motherboard();
 
-        void clock();
+		void clock();
 
-        void loadFile(std::string filename);
-        void loadData(void * data, int size);
-    private:
-        Processor processor;
+		void loadFile(std::string filename);
+		void loadData(void * data, int size);
+	private:
+		Processor processor;
 };

@@ -6,23 +6,23 @@
 class Window;
 
 class Application final {
-    public:
-        Application();
+	public:
+		Application();
 
-        Window& createWindow(const std::string_view& title,
-                int width, int height);
+		Window& createWindow(const std::string_view& title,
+				int width, int height);
 
-        void pollEvents();
+		void pollEvents();
 
-        bool isRunning() const;
+		bool isRunning() const;
 
-        ~Application();
-    private:
-        std::vector<Window*> windows;
+		~Application();
+	private:
+		std::vector<Window*> windows;
 
-        bool running;
+		bool running;
 
-        Application(const Application&) = delete;
-        Application(Application&&) = delete;
-        Application& operator=(const Application&) = delete;
+		Application(const Application&) = delete;
+		Application(Application&&) = delete;
+		Application& operator=(const Application&) = delete;
 };

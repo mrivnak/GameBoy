@@ -9,100 +9,100 @@
 #include "memory-bus.hpp"
 
 namespace APU {
-    class Audio;
-    class Square;
-    class Wave;
-    class Noise;
+	class Audio;
+	class Square;
+	class Wave;
+	class Noise;
 }
 
 class APU::Audio {
-    public:
-        Audio(MemoryBus * memoryBus);
-        ~Audio();
-    private:
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
+	public:
+		Audio(MemoryBus * memoryBus);
+		~Audio();
+	private:
+		MemoryBus * memoryBus;
+		uint16_t memoryAddress;
 
-        Square * square1;
-        Square * square2;
-        Wave * wave;
-        Noise * noise;
+		Square * square1;
+		Square * square2;
+		Wave * wave;
+		Noise * noise;
 };
 
 class APU::Square {
-    public:
-        Square(MemoryBus * memoryBus, const uint16_t memoryAddress, bool sweep);
-        ~Square();
-    private:
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
-        bool sweep;
+	public:
+		Square(MemoryBus * memoryBus, const uint16_t memoryAddress, bool sweep);
+		~Square();
+	private:
+		MemoryBus * memoryBus;
+		uint16_t memoryAddress;
+		bool sweep;
 
-        void getValues();
+		void getValues();
 
-        bool negate;
-        bool envAddMode;
-        bool trigger;
-        bool lengthEnable;
+		bool negate;
+		bool envAddMode;
+		bool trigger;
+		bool lengthEnable;
 
-        uint8_t
-            sweepPeriod,
-            shift, 
-            duty,
-            lengthLoad,
-            startVol,
-            period,
-            freqLSB,
-            freqMSB
-        ;
+		uint8_t
+			sweepPeriod,
+			shift, 
+			duty,
+			lengthLoad,
+			startVol,
+			period,
+			freqLSB,
+			freqMSB
+		;
 
 };
 
 class APU::Wave {
-    public:
-        Wave(MemoryBus * memoryBus, const uint16_t memoryAddress);
-        ~Wave();
-    private:
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
+	public:
+		Wave(MemoryBus * memoryBus, const uint16_t memoryAddress);
+		~Wave();
+	private:
+		MemoryBus * memoryBus;
+		uint16_t memoryAddress;
 
-        std::array<uint8_t, 32> samples;
-        void loadSamples();
+		std::array<uint8_t, 32> samples;
+		void loadSamples();
 
-        void getValues();
+		void getValues();
 
-        bool DACPower;
-        bool trigger;
-        bool lengthEnable;
+		bool DACPower;
+		bool trigger;
+		bool lengthEnable;
 
-        uint8_t
-            lengthLoad,
-            volumeCode,
-            freqLSB,
-            freqMSB
-        ;
+		uint8_t
+			lengthLoad,
+			volumeCode,
+			freqLSB,
+			freqMSB
+		;
 };
 
 class APU::Noise {
-    public:
-        Noise(MemoryBus * memoryBus, const uint16_t memoryAddress);
-        ~Noise();
-    private:
-        MemoryBus * memoryBus;
-        uint16_t memoryAddress;
+	public:
+		Noise(MemoryBus * memoryBus, const uint16_t memoryAddress);
+		~Noise();
+	private:
+		MemoryBus * memoryBus;
+		uint16_t memoryAddress;
 
-        void getValues();
+		void getValues();
 
-        bool envAddMode;
-        bool LFSRWidth;
-        bool trigger;
-        bool lengthEnable;
+		bool envAddMode;
+		bool LFSRWidth;
+		bool trigger;
+		bool lengthEnable;
 
-        uint8_t
-            lengthLoad,
-            startVol,
-            period,
-            clockShift,
-            divisorCode
-        ;
+		uint8_t
+			lengthLoad,
+			startVol,
+			period,
+			clockShift,
+			divisorCode
+		;
 };

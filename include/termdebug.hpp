@@ -28,17 +28,17 @@ const std::string BRIGHT_WHITE      = "\u001b[37;1m";
 const std::string RESET = "\u001b[0m";
 
 class TermDebug {
-    public:
-        static void printDebug(struct Registers * regs);
-        static std::string getDebug(struct Registers * regs);
-    private:
-        static bool isReset;
-        static void resetCursor(unsigned int up, unsigned int down, unsigned int right, unsigned int left);
-        static std::string cursorUp(unsigned int n);
-        static std::string cursorDown(unsigned int n);
-        static std::string cursorRight(unsigned int n);
-        static std::string cursorLeft(unsigned int n);
+	public:
+		static void printDebug(struct Registers * regs);
+		static std::string getDebug(struct Registers * regs);
+	private:
+		static bool isReset;
+		static void resetCursor(unsigned int up, unsigned int down, unsigned int right, unsigned int left);
+		static std::string cursorUp(unsigned int n);
+		static std::string cursorDown(unsigned int n);
+		static std::string cursorRight(unsigned int n);
+		static std::string cursorLeft(unsigned int n);
 
-        static std::string registersString(struct Registers * regs);
-        static void printRegisters(struct Registers * regs);
+		static std::string registersString(struct Registers * regs);
+		static void printRegisters(struct Registers * regs);
 };

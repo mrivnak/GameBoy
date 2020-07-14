@@ -5,38 +5,38 @@
 #include <SDL2/SDL.h>
 
 Application::Application()
-        : running(true) {
+		: running(true) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 }
 
 Window& Application::createWindow(const std::string_view& title,
-        int width, int height) {
-    auto* win = new Window(title, width, height);
-    windows.push_back(win);
+		int width, int height) {
+	auto* win = new Window(title, width, height);
+	windows.push_back(win);
 
-    return *win;
+	return *win;
 }
 
 void Application::pollEvents() {
-    SDL_Event e;
+	SDL_Event e;
 
-    while (SDL_PollEvent(&e)) {
-        switch (e.type) {
-            case SDL_QUIT:
-                running = false;
-                break;
-        }
-    }
+	while (SDL_PollEvent(&e)) {
+		switch (e.type) {
+			case SDL_QUIT:
+				running = false;
+				break;
+		}
+	}
 }
 
 bool Application::isRunning() const {
-    return running;
+	return running;
 }
 
 Application::~Application() {
-    for (auto* win  : windows) {
-        delete win;
-    }
+	for (auto* win  : windows) {
+		delete win;
+	}
 
-    SDL_Quit();
+	SDL_Quit();
 }
