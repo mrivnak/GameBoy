@@ -8,7 +8,8 @@ class MemoryBus final {
 
 		MemoryBus();
 
-		uint8_t readByte(uint16_t address) const;
+		uint8_t read(const uint16_t address) const;
+		void write(const uint16_t address, const uint8_t byte);
 
 		uint8_t operator[](uint16_t address) const;
 

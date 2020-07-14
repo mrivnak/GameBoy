@@ -42,14 +42,17 @@ void Instructions::initNonPrefixed() {
 
 	nonPrefixed[0x01] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
-		reg.setBC(((uint16_t) mem.readByte(pc + 1) << 4) + mem.readByte(pc + 2));
+		reg.B = mem.readByte(reg.PC + 1);
+		reg.C = mem.readByte(reg.PC + 2);
+
 		reg.PC += 3;
 	}; // LD BC,u16
 
 	nonPrefixed[0x02] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
-		reg.setBC8(*reg.getA());
-		pc += 1;
+		//*reg.B = 
+		// TODO: implement instructions with new memory map
+		reg.PC += 1;
 	}; // LD (BC),a
 
 	nonPrefixed[0x03] = [](uint8_t& cycles, Registers& reg, MemoryBus& mem) {
@@ -67,6 +70,7 @@ void Instructions::initNonPrefixed() {
 
 		reg.setZero(*reg.getB() == 0);
 		reg.setNegative(false);
+		// TODO: verify that flags are set correctly
 
 		pc += 1;
 	}; // INC B

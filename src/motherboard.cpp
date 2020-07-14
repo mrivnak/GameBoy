@@ -12,6 +12,7 @@ void Motherboard::clock() {
     processor.step();
 }
 
+// TODO: IMPORTANT Add proper handling for cartridge and boot roms with new structures
 void Motherboard::loadFile(std::string filename) {
     std::FILE* file = std::fopen(filename.c_str(), "r");
 
