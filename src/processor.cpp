@@ -2,14 +2,14 @@
 
 #include "instructions.hpp"
 
-#include <cstdio> // TODO: excise logging
+#include <iostream>
 
 Processor::Processor() {
 	cycles = 0;
 }
 
 void Processor::step() {
-	if (cycles == 0) {
+	if (cycles <= 0) {
 		uint8_t instructionByte = memory.read(registers.PC);
 		bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
 
@@ -21,8 +21,8 @@ void Processor::step() {
 			instruction(cycles, registers, memory);
 		}
 		else {
-			fprintf(stderr, "Invalid instruction: 0x%s%X\n",
-					prefixByte ? "CB" : "", instructionByte);
+			std::cerr << "Invalid instruction: 0x" << \
+				(prefixByte ? "CB" : "") << std::hex << instructionByte << std::endl;
 		}
 	}
 
