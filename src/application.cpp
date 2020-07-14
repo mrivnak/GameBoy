@@ -9,7 +9,7 @@ Application::Application()
 	SDL_Init(SDL_INIT_EVERYTHING);
 }
 
-Window& Application::createWindow(const std::string_view& title,
+Window& Application::createWindow(const std::string& title,
 		int width, int height) {
 	auto* win = new Window(title, width, height);
 	windows.push_back(win);

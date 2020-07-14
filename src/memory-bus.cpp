@@ -110,8 +110,8 @@ void MemoryBus::write(const uint16_t address, const uint8_t byte) {
 	}
 }
 
-void MemoryBus::loadCartridge(Cartridge * cartridge) {
-	this->cartridge = cartridge;
+void MemoryBus::loadCartridge(Cartridge * cart) {
+	this->cartridge = cart;
 }
 
 void MemoryBus::loadDisplay(Display * display) {

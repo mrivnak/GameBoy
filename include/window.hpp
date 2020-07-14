@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string_view>
+#include <string>
 
 struct SDL_Window;
 class RenderDevice;
@@ -17,7 +17,7 @@ class Window final {
 
 		~Window();
 	protected:
-		Window(const std::string_view& title, int width, int height);
+		Window(const std::string& title, int width, int height);
 
 		friend class Application;
 	private:

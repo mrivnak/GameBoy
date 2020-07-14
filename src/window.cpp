@@ -2,7 +2,7 @@
 
 #include "render-device.hpp"
 
-Window::Window(const std::string_view& title, int width, int height)
+Window::Window(const std::string& title, int width, int height)
 		: window(nullptr)
 		, renderDevice(nullptr)
 		, width(width)
@@ -16,7 +16,7 @@ Window::Window(const std::string_view& title, int width, int height)
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	window = SDL_CreateWindow(title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			width, height, SDL_WINDOW_OPENGL);
 
 	renderDevice = new RenderDevice(*this);

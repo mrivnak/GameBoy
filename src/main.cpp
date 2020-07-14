@@ -100,11 +100,13 @@ int main(int argc, char** argv) {
 
 	Motherboard motherboard;
 
-	motherboard.loadBootROM();
 	motherboard.loadCartridge(gameFilename);
+	motherboard.loadBootROM();
+
+	std::string gameTitle = motherboard.getTitle();
 
 	Application app;
-	Window& window = app.createWindow("WIT GBA - " + motherboard.getTitle(), 800, 600);
+	Window& window = app.createWindow("WIT GBA - " + gameTitle, 800, 600);
 	auto& renderDevice = window.getRenderDevice();
 
 	Bitmap bmp(64, 64);

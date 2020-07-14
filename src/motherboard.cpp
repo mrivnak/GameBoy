@@ -1,7 +1,7 @@
 #include "motherboard.hpp"
 
 Motherboard::Motherboard() {
-
+	loadMemory();
 }
 
 Motherboard::~Motherboard() {
@@ -23,6 +23,8 @@ void Motherboard::loadBootROM() {
 		cartridge.rombank.bank[0][i] = (*data)[i];
 	}
 
+	
+
 	delete data;
 }
 
@@ -33,7 +35,7 @@ void Motherboard::loadCartridge(std::string filename) {
 
 	// Cartridge metadata
 	for (int i = 0; i < 16; i++) {
-		cartridge.header.title[i] = (*data)[0x0134+1];  // Read game title bytes
+		cartridge.header.title[i] = (*data)[0x0134+i];  // Read game title bytes
 	}
 	cartridge.header.type = (*data)[0x0147];
 	cartridge.header.ROMSize = (*data)[0x0148];
@@ -64,7 +66,7 @@ void Motherboard::loadMemory() {
 std::vector<uint8_t> Motherboard::readFile(std::string filename)
 {
     // open the file:
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
 
     // Stop eating new lines in binary mode!!!
     file.unsetf(std::ios::skipws);
@@ -78,12 +80,15 @@ std::vector<uint8_t> Motherboard::readFile(std::string filename)
 
     // reserve capacity
     std::vector<uint8_t> vec;
-    vec.reserve(fileSize);
 
     // read the data:
-    vec.insert(vec.begin(),
-               std::istream_iterator<uint8_t>(file),
-               std::istream_iterator<uint8_t>());
+	char b;
+    if (file) {
+		for (int i = 0; i < fileSize; i++) {
+			file.read(&b, 1);
+			vec.push_back((uint8_t) b);
+		}
+	}
 
     return vec;
 }

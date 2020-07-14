@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string_view>
+#include <string>
 #include <vector>
 
 class Window;
@@ -9,7 +9,7 @@ class Application final {
 	public:
 		Application();
 
-		Window& createWindow(const std::string_view& title,
+		Window& createWindow(const std::string& title,
 				int width, int height);
 
 		void pollEvents();
