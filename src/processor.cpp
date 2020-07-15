@@ -9,7 +9,7 @@ Processor::Processor() {
 }
 
 void Processor::step() {
-	if (cycles <= 0) {
+	if (cycles = 0) {
 		uint8_t instructionByte = memory.read(registers.PC);
 		bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
 

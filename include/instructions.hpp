@@ -29,3 +29,7 @@ class Instructions final : public Singleton<Instructions> {
 		void initPrefixed();
 		void initNonPrefixed();
 };
+
+namespace {
+	using Instruction = Instructions::Instruction;
+};

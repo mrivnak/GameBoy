@@ -5,10 +5,6 @@
 
 #include <cstdio>
 
-namespace {
-	using Instruction = Instructions::Instruction;
-};
-
 Instructions::Instructions() {
 	initPrefixed();
 	initNonPrefixed();
@@ -47,7 +43,7 @@ void Instructions::initNonPrefixed() {
 		reg.PC += 3;
 	};
 
-	// LD (BC),a
+	// LD (BC),A
 	nonPrefixed[0x02] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
@@ -59,10 +55,12 @@ void Instructions::initNonPrefixed() {
 	// INC BC
 	nonPrefixed[0x03] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
+		
 		reg.C++;
 		if (reg.C == 0) {
 			reg.B++;
 		}
+
 		reg.PC += 1;
 	};
 
@@ -170,7 +168,7 @@ void Instructions::initNonPrefixed() {
 
 	// INC C
 	nonPrefixed[0x0C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		cycles = 8;
+		cycles = 4;
 
 		reg.setHalfCarry(((reg.C & 0xF) + (1 & 0xF)) & 0x10 == 0x10);
 
@@ -236,7 +234,7 @@ void Instructions::initNonPrefixed() {
 		reg.PC += 3;
 	};
 
-	// LD (DE),a
+	// LD (DE),A
 	nonPrefixed[0x12] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
@@ -257,7 +255,7 @@ void Instructions::initNonPrefixed() {
 
 	// INC D
 	nonPrefixed[0x14] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		cycles = 8;
+		cycles = 4;
 
 		reg.setHalfCarry(((reg.D & 0xF) + (1 & 0xF)) & 0x10 == 0x10);
 
@@ -359,7 +357,7 @@ void Instructions::initNonPrefixed() {
 
 	// INC E
 	nonPrefixed[0x1C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		cycles = 8;
+		cycles = 4;
 
 		reg.setHalfCarry(((reg.E & 0xF) + (1 & 0xF)) & 0x10 == 0x10);
 
@@ -405,6 +403,225 @@ void Instructions::initNonPrefixed() {
 		reg.setZero(false);
 		reg.setNegative(false);
 		reg.setHalfCarry(false);
+
+		reg.PC += 1;
+	};
+
+	// JR NZ,i8
+	nonPrefixed[0x20] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		if (!reg.getZero()) {
+			cycles = 12;
+			reg.PC += (int8_t) mem.read(reg.PC);
+		}
+
+		reg.PC += 2;
+	};
+
+	// LD HL,u16
+	nonPrefixed[0x21] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 12;
+
+		reg.H = mem.read(reg.PC + 1);
+		reg.L = mem.read(reg.PC + 2);
+
+		reg.PC += 3;
+	};
+
+	// LD (HL+),A
+	nonPrefixed[0x22] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		mem.write(((uint16_t) reg.D << 8) | reg.E, reg.A);
+		reg.L++;
+		if (reg.L == 0) {
+			reg.H++;
+		}
+
+		reg.PC += 1;
+	};
+
+	// INC HL
+	nonPrefixed[0x23] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+		reg.L++;
+		if (reg.L == 0) {
+			reg.H++;
+		}
+		reg.PC += 1;
+	};
+
+	// INC H
+	nonPrefixed[0x24] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.setHalfCarry(((reg.H & 0xF) + (1 & 0xF)) & 0x10 == 0x10);
+
+		reg.H++;
+
+		reg.setZero(reg.H == 0);
+		reg.setNegative(false);
+
+		reg.PC += 1;
+	};
+
+	// DEC H
+	nonPrefixed[0x25] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.setHalfCarry(((reg.H & 0xF) - (1 & 0xF)) & 0x10 == 0x10);
+
+		reg.H--;
+
+		reg.setZero(reg.H == 0);
+		reg.setNegative(true);
+
+		reg.PC += 1;
+	};
+
+	// LD H,u8
+	nonPrefixed[0x26] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H = mem.read(reg.PC + 1);
+
+		reg.PC += 2;
+	};
+	
+	// DAA
+	nonPrefixed[0x27] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		if (reg.getNegative()) {
+			if (reg.A < 0x99 || reg.getCarry()) {
+				reg.A += 0x60;
+				reg.setCarry(1);
+			}
+			if (reg.getHalfCarry() || reg.A & 0xF > 0x09) {
+				reg.A += 0x06;
+			}
+		}
+		else {
+			if (reg.getCarry()) {
+				reg.A -= 0x60;
+			}
+			if (reg.getHalfCarry()) {
+				reg.A -= 0x06;
+			}
+		}
+
+		if (reg.A == 0) {
+			reg.setZero(true);
+		}
+		else {
+			reg.setZero(false);
+		}
+		reg.setHalfCarry(false);
+
+		reg.PC += 1;
+	};
+
+	// JR Z,i8
+	nonPrefixed[0x28] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		if (!reg.getZero()) {
+			cycles = 12;
+			reg.PC += (int8_t) mem.read(reg.PC);
+		}
+
+		reg.PC += 2;
+	};
+
+	// ADD HL,HL
+	nonPrefixed[0x29] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint16_t HL = (uint16_t) reg.H << 8 | (uint16_t) reg.L;
+
+		reg.setCarry((uint32_t) HL + (uint32_t) HL < 0xFFFF);
+		reg.setHalfCarry(((HL & 0x0FFF) + ((HL) & 0x0FFF)) & 0x1000 == 0x1000);
+
+		HL += HL;
+
+		reg.setNegative(0);
+
+		reg.H = (uint8_t) (HL >> 8) & 0xFF;
+		reg.L = (uint8_t) HL & 0xFF;
+
+		reg.PC += 1;
+	};
+
+	// LD A,(HL+)
+	nonPrefixed[0x2A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.H);
+		reg.L++;
+		if (reg.L == 0) {
+			reg.H++;
+		}
+
+		reg.PC += 1;
+	};
+
+	// DEC HL
+	nonPrefixed[0x2B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L--;
+		if (reg.L == 0xFF) {
+			reg.H--;
+		}
+
+		reg.PC += 1;
+	};
+
+	// INC L
+	nonPrefixed[0x2C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.setHalfCarry(((reg.L & 0xF) + (1 & 0xF)) & 0x10 == 0x10);
+
+		reg.L++;
+
+		reg.setZero(reg.L == 0);
+		reg.setNegative(false);
+
+		reg.PC += 1;
+	};
+
+	// DEC L
+	nonPrefixed[0x2D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.setHalfCarry(((reg.L & 0xF) - (1 & 0xF)) & 0x10 == 0x10);
+
+		reg.L--;
+
+		reg.setZero(reg.L == 0);
+		reg.setNegative(true);
+
+		reg.PC += 1;
+	};
+
+	// LD L,u8
+	nonPrefixed[0x2E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L = mem.read(reg.PC + 1);
+
+		reg.PC += 2;
+	};
+
+	// CPL
+	nonPrefixed[0x2F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.A = ~reg.A;
+		reg.setNegative(true);
+		reg.setHalfCarry(true);
 
 		reg.PC += 1;
 	};
