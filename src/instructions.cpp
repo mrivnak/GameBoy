@@ -829,6 +829,141 @@ void Instructions::initNonPrefixed() {
 		reg.PC += 1;
 	};
 
+	// LD B,B
+	nonPrefixed[0x40] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.B = reg.B;
+
+		reg.PC += 1;
+	};
+
+	// LD B,C
+	nonPrefixed[0x41] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.B = reg.C;
+
+		reg.PC += 1;
+	};
+
+	// LD B,D
+	nonPrefixed[0x42] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.B = reg.D;
+
+		reg.PC += 1;
+	};
+
+	// LD B,E
+	nonPrefixed[0x43] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.B = reg.E;
+
+		reg.PC += 1;
+	};
+
+	// LD B,H
+	nonPrefixed[0x44] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.B = reg.H;
+
+		reg.PC += 1;
+	};
+
+	// LD B,L
+	nonPrefixed[0x45] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.B = reg.L;
+
+		reg.PC += 1;
+	};
+
+	// LD B,(HL)
+	nonPrefixed[0x47] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+
+		reg.PC += 1;
+	};
+
+	// LD C,B
+	nonPrefixed[0x48] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.C = reg.B;
+
+		reg.PC += 1;
+	};
+
+	// LD C,C
+	nonPrefixed[0x49] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.C = reg.C;
+
+		reg.PC += 1;
+	};
+
+	// LD C,D
+	nonPrefixed[0x4A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.C = reg.D;
+
+		reg.PC += 1;
+	};
+
+	// LD C,E
+	nonPrefixed[0x4B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.C = reg.E;
+
+		reg.PC += 1;
+	};
+
+	// LD C,H
+	nonPrefixed[0x4C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.C = reg.H;
+
+		reg.PC += 1;
+	};
+
+	// LD C,L
+	nonPrefixed[0x4D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.C = reg.L;
+
+		reg.PC += 1;
+	};
+
+	// LD C,(HL)
+	nonPrefixed[0x4E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+
+		reg.PC += 1;
+	};
+
+	// LD C,A
+	nonPrefixed[0x4F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 4;
+
+		reg.C = reg.A;
+
+		reg.PC += 1;
+	};
+
 	// TODO: implement the rest of the instructions
 }
 
