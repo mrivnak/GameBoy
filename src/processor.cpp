@@ -9,21 +9,25 @@ Processor::Processor() {
 }
 
 void Processor::step() {
-	if (cycles = 0) {
-		uint8_t instructionByte = memory.read(registers.PC);
-		bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
+	if (!registers.HALT) {
+		if (cycles = 0) {
+			uint8_t instructionByte = memory.read(registers.PC);
+			bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
 
-		if (prefixByte) {
-			instructionByte = memory.read(registers.PC + 1);
-		}
+			if (prefixByte) {
+				instructionByte = memory.read(registers.PC + 1);
+			}
 
-		if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {
-			instruction(cycles, registers, memory);
+			if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {
+				instruction(cycles, registers, memory);
+			}
+			else {
+				std::cerr << "Invalid instruction: 0x" << \
+					(prefixByte ? "CB" : "") << std::hex << instructionByte << std::endl;
+			}
 		}
-		else {
-			std::cerr << "Invalid instruction: 0x" << \
-				(prefixByte ? "CB" : "") << std::hex << instructionByte << std::endl;
-		}
+	} else {
+		// TODO: exit halt
 	}
 
 	cycles--;
