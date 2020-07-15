@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
 	std::string gameTitle = motherboard.getTitle();
 
 	Application app;
-	Window& window = app.createWindow("WIT GBA - " + gameTitle, 800, 600);
+	Window& window = app.createWindow("WIT GB Emulator - " + gameTitle, 800, 600);
 	auto& renderDevice = window.getRenderDevice();
 
 	Bitmap bmp(64, 64);
