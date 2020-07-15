@@ -22,9 +22,6 @@ Instruction Instructions::fetchInstruction(const uint8_t instructionByte, bool p
 Instructions::~Instructions() {
 }
 
-void Instructions::initPrefixed() {
-}
-
 void Instructions::initNonPrefixed() {
 	// NOP
 	nonPrefixed[0x00] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
@@ -629,3 +626,7 @@ void Instructions::initNonPrefixed() {
 	// TODO: implement the rest of the instructions
 }
 
+
+void Instructions::initPrefixed() {
+
+}
