@@ -2720,12 +2720,11 @@ void Instructions::initNonPrefixed() {
 
 	// RETI
 	nonPrefixed[0xD9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		cycles = 16;
 
 		reg.PC = ((uint16_t) mem.read(reg.SP) << 8) | (uint16_t) mem.read(reg.SP + 1);
 		reg.SP += 2;
 
-		mem.InterruptsEnable = true;
+		mem.interruptsEnable = true;
 	};
 
 	// JP C,u16
@@ -2972,7 +2971,7 @@ void Instructions::initNonPrefixed() {
 	};
 
 	// DI
-	nonPrefixed[0xF#] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0xF3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 4;
 
 		mem.interruptsEnable = false;  // TODO: what does this do
@@ -3031,7 +3030,7 @@ void Instructions::initNonPrefixed() {
 		uint16_t result = (uint16_t) reg.SP + (uint16_t) i8;
 
 		reg.setHalfCarry(((reg.SP & 0xF) + ((uint16_t) i8 & 0xF)) >= 0x10);
-		reg.setCarry(((uint16_t) i8 & 0xFF) + (reg.SP & oxFF) > 0xFF);
+		reg.setCarry(((uint16_t) i8 & 0xFF) + (reg.SP & 0xFF) > 0xFF);
 
 		reg.H = (uint8_t) (result >> 8);
 		reg.L = (uint8_t) (result & 0xFF);
@@ -3065,7 +3064,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 4;
 
 		// TODO: implement interrupts
-		std::cerr << "unsupported instruction 0xFB, exiting..."
+		std::cerr << "unsupported instruction 0xFB, exiting...";
 		exit(5);
 
 		reg.PC += 1;

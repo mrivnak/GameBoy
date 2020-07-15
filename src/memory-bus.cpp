@@ -67,41 +67,56 @@ void MemoryBus::write(const uint16_t address, const uint8_t byte) {
 							cartridge->rombank.bankPtr = byte & 0x1F;
 						}
 					}
+					break;
 			}
+			break;
 		case 0x4000 ... 0x5FFF:  // 16K ROM bank 1-N, from cartridge, switchable bank via MB (if any)
 			switch (cartridge->header.type) {
 				case 0x01 ... 0x03:
 					if (cartridge->header.RAMSize == 0x03 && ERAMEnable) {
 						cartridge->rambank.bankPtr = byte & 0x03;
 					}
+					break;
 			}
+			break;
 		case 0x6000 ... 0x7FFF:  // 16K ROM bank 1-N, from cartridge, switchable bank via MB (if any)
 			if (cartridge->header.type == 0x01) {
 				bankingMode = byte & 0x01;
 			}
+			break;
 		case 0x8000 ... 0x9FFF:  // 8K Video RAM, only bank 0 switchable in non-CGB mode, 0/1 in CGB mode
 			display->VRAM[address - 0x8000] = byte;
+			break;
 		case 0xA000 ... 0xBFFF:  // 8K External RAM, in cartridge, switchable bank if any
 			switch (cartridge->header.type) {
 				case 0x00:
 					cartridge->rambank.bank[cartridge->rambank.bankPtr][address - 0xA000] = byte;
+					break;
 				case 0x01 ... 0x03:
 					if (ERAMEnable) {
 						cartridge->rambank.bank[cartridge->rambank.bankPtr][address - 0xA000] = byte;
 					}
+					break;
 			}
+			break;
 		case 0xC000 ... 0xDFFF:  // 4K Work RAM bank 0-1, banks 2-7 switchable in CGB mode
 			WRAM[address - 0xC000] = byte;
+			break;
 		case 0xE000 ... 0xFDFF:  // Echo RAM, a copy of the bank of RAM below it. Works both ways
 			WRAM[address - 0xE000] = byte;
+			break;
 		case 0xFE00 ... 0xFE9F:  // Sprite Attribute Table (OAM)
 			display->OAM[address - 0xFE00] = byte;
+			break;
 		case 0xFF00 ... 0xFF7F:  // IO Registers
 			writeIO(address, byte);
+			break;
 		case 0xFF80 ... 0xFFFE:  // High RAM
 			HRAM[address - 0xFF80] = byte;
+			break;
 		case 0xFFFF:  // Interrupts Enable Register
 			interruptsEnable = byte;
+			break;
 		default:
 			// 0xFEA0 ... 0xFEFF Not usable
 			std::cerr << "ERROR: Attempt to write non-writeable memory address: " << address << std::endl;

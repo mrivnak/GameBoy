@@ -10,7 +10,7 @@ Processor::Processor() {
 
 void Processor::step() {
 	if (!registers.HALT) {
-		if (cycles = 0) {
+		if (cycles == 0) {
 			uint8_t instructionByte = memory.read(registers.PC);
 			bool prefixByte = instructionByte == Instructions::PREFIX_BYTE;
 
@@ -20,6 +20,8 @@ void Processor::step() {
 
 			if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {
 				instruction(cycles, registers, memory);
+				std::cout << "Instruction: 0x" << \
+					(prefixByte ? "CB" : "") << std::hex << instructionByte << std::endl;
 			}
 			else {
 				std::cerr << "Invalid instruction: 0x" << \
