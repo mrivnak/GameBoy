@@ -3537,7 +3537,7 @@ void Instructions::initPrefixed() {
 
 		bool tempCarry = reg.getCarry();
 
-		reg.setCarry(reg.BE & 0x1);
+		reg.setCarry(reg.E & 0x1);
 		reg.E = tempCarry << 7 | reg.E >> 1;
 
 		reg.setZero(reg.E == 0);
@@ -3587,7 +3587,7 @@ void Instructions::initPrefixed() {
 		bool tempCarry = reg.getCarry();
 
 		reg.setCarry(HL & 0x1);
-		uint8_t output = tempCarry << 7 | HL >> 1;
+		uint8_t result = tempCarry << 7 | HL >> 1;
 		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.setZero(result == 0);
@@ -3706,7 +3706,7 @@ void Instructions::initPrefixed() {
 		reg.setCarry(HL & (1 << 7) >> 7);
 		uint8_t result = HL << 1;
 
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.setZero(result == 0);
 		reg.setNegative(false);
@@ -3835,7 +3835,7 @@ void Instructions::initPrefixed() {
 		reg.setCarry(HL & 0x1);
 
 		uint8_t result = bit7 << 7 | reg.L >> 1;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.setZero(reg.L == 0);
 		reg.setNegative(false);
@@ -4083,7 +4083,7 @@ void Instructions::initPrefixed() {
 		reg.setCarry(HL & 0x1);
 		uint8_t result = HL >> 1;
 
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.setZero(reg.L == 0);
 		reg.setNegative(false);
@@ -4822,6 +4822,1190 @@ void Instructions::initPrefixed() {
 		reg.setZero(reg.A & 0b10000000 == 0b00000000);
 		reg.setNegative(false);
 		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// RES 0,B
+	prefixed[0x80] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b11111110;
+
+		reg.PC += 2;
+	};
+
+	// RES 0,C
+	prefixed[0x81] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b11111110;
+
+		reg.PC += 2;
+	};
+
+	// RES 0,D
+	prefixed[0x82] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b11111110;
+
+		reg.PC += 2;
+	};
+
+	// RES 0,E
+	prefixed[0x83] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b11111110;
+
+		reg.PC += 2;
+	};
+
+	// RES 0,H
+	prefixed[0x84] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b11111110;
+
+		reg.PC += 2;
+	};
+
+	// RES 0,L
+	prefixed[0x85] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b11111110;
+
+		reg.PC += 2;
+	};
+
+	// RES 0,(HL)
+	prefixed[0x86] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b11111110;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 0,A
+	prefixed[0x87] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b11111110;
+
+		reg.PC += 2;
+	};
+
+	// RES 1,B
+	prefixed[0x88] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b11111101;
+
+		reg.PC += 2;
+	};
+
+	// RES 1,C
+	prefixed[0x89] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b11111101;
+
+		reg.PC += 2;
+	};
+
+	// RES 1,D
+	prefixed[0x8A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b11111101;
+
+		reg.PC += 2;
+	};
+
+	// RES 1,E
+	prefixed[0x8B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b11111101;
+
+		reg.PC += 2;
+	};
+
+	// RES 1,H
+	prefixed[0x8C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b11111101;
+
+		reg.PC += 2;
+	};
+
+	// RES 1,L
+	prefixed[0x8D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b11111101;
+
+		reg.PC += 2;
+	};
+
+	// RES 1,(HL)
+	prefixed[0x8E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b11111101;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 1,A
+	prefixed[0x8F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b11111101;
+
+		reg.PC += 2;
+	};
+
+	// RES 2,B
+	prefixed[0x90] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b11111011;
+
+		reg.PC += 2;
+	};
+
+	// RES 2,C
+	prefixed[0x91] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b11111011;
+
+		reg.PC += 2;
+	};
+
+	// RES 2,D
+	prefixed[0x92] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b11111011;
+
+		reg.PC += 2;
+	};
+
+	// RES 2,E
+	prefixed[0x93] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b11111011;
+
+		reg.PC += 2;
+	};
+
+	// RES 2,H
+	prefixed[0x94] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b11111011;
+
+		reg.PC += 2;
+	};
+
+	// RES 2,L
+	prefixed[0x95] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b11111011;
+
+		reg.PC += 2;
+	};
+
+	// RES 2,(HL)
+	prefixed[0x96] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b11111011;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 2,A
+	prefixed[0x97] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b11111011;
+
+		reg.PC += 2;
+	};
+
+	// RES 3,B
+	prefixed[0x98] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b11110111;
+
+		reg.PC += 2;
+	};
+
+	// RES 3,C
+	prefixed[0x99] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b11110111;
+
+		reg.PC += 2;
+	};
+
+	// RES 3,D
+	prefixed[0x9A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b11110111;
+
+		reg.PC += 2;
+	};
+
+	// RES 3,E
+	prefixed[0x9B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b11110111;
+
+		reg.PC += 2;
+	};
+
+	// RES 3,H
+	prefixed[0x9C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b11110111;
+
+		reg.PC += 2;
+	};
+
+	// RES 3,L
+	prefixed[0x9D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b11110111;
+
+		reg.PC += 2;
+	};
+
+	// RES 3,(HL)
+	prefixed[0x9E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b11110111;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 3,A
+	prefixed[0x9F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b11110111;
+
+		reg.PC += 2;
+	};
+
+	// RES 4,B
+	prefixed[0xA0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b11101111;
+
+		reg.PC += 2;
+	};
+
+	// RES 4,C
+	prefixed[0xA1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b11101111;
+
+		reg.PC += 2;
+	};
+
+	// RES 4,D
+	prefixed[0xA2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b11101111;
+
+		reg.PC += 2;
+	};
+
+	// RES 4,E
+	prefixed[0xA3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b11101111;
+
+		reg.PC += 2;
+	};
+
+	// RES 4,H
+	prefixed[0xA4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b11101111;
+
+		reg.PC += 2;
+	};
+
+	// RES 4,L
+	prefixed[0xA5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b11101111;
+
+		reg.PC += 2;
+	};
+
+	// RES 4,(HL)
+	prefixed[0xA6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b11101111;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 4,A
+	prefixed[0xA7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b11101111;
+
+		reg.PC += 2;
+	};
+
+	// RES 5,B
+	prefixed[0xA8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b11011111;
+
+		reg.PC += 2;
+	};
+
+	// RES 5,C
+	prefixed[0xA9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b11011111;
+
+		reg.PC += 2;
+	};
+
+	// RES 5,D
+	prefixed[0xAA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b11011111;
+
+		reg.PC += 2;
+	};
+
+	// RES 5,E
+	prefixed[0xAB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b11011111;
+
+		reg.PC += 2;
+	};
+
+	// RES 5,H
+	prefixed[0xAC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b11011111;
+
+		reg.PC += 2;
+	};
+
+	// RES 5,L
+	prefixed[0xAD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b11011111;
+
+		reg.PC += 2;
+	};
+
+	// RES 5,(HL)
+	prefixed[0xAE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b11011111;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 5,A
+	prefixed[0xAF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b11011111;
+
+		reg.PC += 2;
+	};
+
+	// RES 6,B
+	prefixed[0xB0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b10111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 6,C
+	prefixed[0xB1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b10111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 6,D
+	prefixed[0xB2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b10111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 6,E
+	prefixed[0xB3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b10111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 6,H
+	prefixed[0xB4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b10111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 6,L
+	prefixed[0xB5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b10111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 6,(HL)
+	prefixed[0xB6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b10111111;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 6,A
+	prefixed[0xB7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b10111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 7,B
+	prefixed[0xB8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B &= 0b01111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 7,C
+	prefixed[0xB9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C &= 0b01111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 7,D
+	prefixed[0xBA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D &= 0b01111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 7,E
+	prefixed[0xBB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E &= 0b01111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 7,H
+	prefixed[0xBC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H &= 0b01111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 7,L
+	prefixed[0xBD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L &= 0b01111111;
+
+		reg.PC += 2;
+	};
+
+	// RES 7,(HL)
+	prefixed[0xBE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL & 0b01111111;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// RES 7,A
+	prefixed[0xBF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A &= 0b01111111;
+
+		reg.PC += 2;
+	};
+
+	// SET 0,B
+	prefixed[0xC0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b00000001;
+
+		reg.PC += 2;
+	};
+
+	// SET 0,C
+	prefixed[0xC1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b00000001;
+
+		reg.PC += 2;
+	};
+
+	// SET 0,D
+	prefixed[0xC2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b00000001;
+
+		reg.PC += 2;
+	};
+
+	// SET 0,E
+	prefixed[0xC3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b00000001;
+
+		reg.PC += 2;
+	};
+
+	// SET 0,H
+	prefixed[0xC4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b00000001;
+
+		reg.PC += 2;
+	};
+
+	// SET 0,L
+	prefixed[0xC5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b00000001;
+
+		reg.PC += 2;
+	};
+
+	// SET 0,(HL)
+	prefixed[0xC6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b00000001;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 0,A
+	prefixed[0xC7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b00000001;
+
+		reg.PC += 2;
+	};
+
+	// SET 1,B
+	prefixed[0xC8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b00000010;
+
+		reg.PC += 2;
+	};
+
+	// SET 1,C
+	prefixed[0xC9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b00000010;
+
+		reg.PC += 2;
+	};
+
+	// SET 1,D
+	prefixed[0xCA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b00000010;
+
+		reg.PC += 2;
+	};
+
+	// SET 1,E
+	prefixed[0xCB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b00000010;
+
+		reg.PC += 2;
+	};
+
+	// SET 1,H
+	prefixed[0xCC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b00000010;
+
+		reg.PC += 2;
+	};
+
+	// SET 1,L
+	prefixed[0xCD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b00000010;
+
+		reg.PC += 2;
+	};
+
+	// SET 1,(HL)
+	prefixed[0xCE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b00000010;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 1,A
+	prefixed[0xCF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b00000010;
+
+		reg.PC += 2;
+	};
+
+	// SET 2,B
+	prefixed[0xD0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b00000100;
+
+		reg.PC += 2;
+	};
+
+	// SET 2,C
+	prefixed[0xD1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b00000100;
+
+		reg.PC += 2;
+	};
+
+	// SET 2,D
+	prefixed[0xD2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b00000100;
+
+		reg.PC += 2;
+	};
+
+	// SET 2,E
+	prefixed[0xD3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b00000100;
+
+		reg.PC += 2;
+	};
+
+	// SET 2,H
+	prefixed[0xD4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b00000100;
+
+		reg.PC += 2;
+	};
+
+	// SET 2,L
+	prefixed[0xD5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b00000100;
+
+		reg.PC += 2;
+	};
+
+	// SET 2,(HL)
+	prefixed[0xD6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b00000100;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 2,A
+	prefixed[0xD7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b00000100;
+
+		reg.PC += 2;
+	};
+
+	// SET 3,B
+	prefixed[0xD8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b00001000;
+
+		reg.PC += 2;
+	};
+
+	// SET 3,C
+	prefixed[0xD9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b00001000;
+
+		reg.PC += 2;
+	};
+
+	// SET 3,D
+	prefixed[0xDA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b00001000;
+
+		reg.PC += 2;
+	};
+
+	// SET 3,E
+	prefixed[0xDB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b00001000;
+
+		reg.PC += 2;
+	};
+
+	// SET 3,H
+	prefixed[0xDC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b00001000;
+
+		reg.PC += 2;
+	};
+
+	// SET 3,L
+	prefixed[0xDD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b00001000;
+
+		reg.PC += 2;
+	};
+
+	// SET 3,(HL)
+	prefixed[0xDE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b00001000;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 3,A
+	prefixed[0xDF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b00001000;
+
+		reg.PC += 2;
+	};
+
+	// SET 4,B
+	prefixed[0xE0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b00010000;
+
+		reg.PC += 2;
+	};
+
+	// SET 4,C
+	prefixed[0xE1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b00010000;
+
+		reg.PC += 2;
+	};
+
+	// SET 4,D
+	prefixed[0xE2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b00010000;
+
+		reg.PC += 2;
+	};
+
+	// SET 4,E
+	prefixed[0xE3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b00010000;
+
+		reg.PC += 2;
+	};
+
+	// SET 4,H
+	prefixed[0xE4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b00010000;
+
+		reg.PC += 2;
+	};
+
+	// SET 4,L
+	prefixed[0xE5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b00010000;
+
+		reg.PC += 2;
+	};
+
+	// SET 4,(HL)
+	prefixed[0xE6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b00010000;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 4,A
+	prefixed[0xE7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b00010000;
+
+		reg.PC += 2;
+	};
+
+	// SET 5,B
+	prefixed[0xE8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b00100000;
+
+		reg.PC += 2;
+	};
+
+	// SET 5,C
+	prefixed[0xE9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b00100000;
+
+		reg.PC += 2;
+	};
+
+	// SET 5,D
+	prefixed[0xEA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b00100000;
+
+		reg.PC += 2;
+	};
+
+	// SET 5,E
+	prefixed[0xEB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b00100000;
+
+		reg.PC += 2;
+	};
+
+	// SET 5,H
+	prefixed[0xEC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b00100000;
+
+		reg.PC += 2;
+	};
+
+	// SET 5,L
+	prefixed[0xED] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b00100000;
+
+		reg.PC += 2;
+	};
+
+	// SET 5,(HL)
+	prefixed[0xEE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b00100000;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 5,A
+	prefixed[0xEF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b00100000;
+
+		reg.PC += 2;
+	};
+
+	// SET 6,B
+	prefixed[0xF0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b01000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 6,C
+	prefixed[0xF1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b01000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 6,D
+	prefixed[0xF2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b01000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 6,E
+	prefixed[0xF3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b01000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 6,H
+	prefixed[0xF4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b01000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 6,L
+	prefixed[0xF5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b01000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 6,(HL)
+	prefixed[0xF6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b01000000;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 6,A
+	prefixed[0xF7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b01000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 7,B
+	prefixed[0xF8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.B |= 0b10000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 7,C
+	prefixed[0xF9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.C |= 0b10000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 7,D
+	prefixed[0xFA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.D |= 0b10000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 7,E
+	prefixed[0xFB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.E |= 0b10000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 7,H
+	prefixed[0xFC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.H |= 0b10000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 7,L
+	prefixed[0xFD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.L |= 0b10000000;
+
+		reg.PC += 2;
+	};
+
+	// SET 7,(HL)
+	prefixed[0xFE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = HL | 0b10000000;
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+
+		reg.PC += 2;
+	};
+
+	// SET 7,A
+	prefixed[0xFF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.A |= 0b10000000;
 
 		reg.PC += 2;
 	};
