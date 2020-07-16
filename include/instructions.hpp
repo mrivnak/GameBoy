@@ -28,8 +28,18 @@ class Instructions final : public Singleton<Instructions> {
 
 		void initPrefixed();
 		void initNonPrefixed();
+
 };
 
 namespace {
 	using Instruction = Instructions::Instruction;
+
+	uint16_t getAddress(uint8_t a, uint8_t b);
+
+	void op_SRA(uint8_t& data, Registers& reg);
+	void op_SWAP(uint8_t& data, Registers& reg);
+	void op_SRL(uint8_t& data, Registers& reg);
+	void op_BIT(int bit, uint8_t& data, Registers& reg);
+	void op_RES(int bit, uint8_t& data);
+	void op_SET(int bit, uint8_t& data);
 };

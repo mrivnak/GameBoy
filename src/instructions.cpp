@@ -679,7 +679,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x34] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
-		uint8_t result = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = mem.read(getAddress(reg.H, reg.L));
 
 		reg.setHalfCarry(((result & 0xF) + (1 & 0xF)) & 0x10 == 0x10);
 
@@ -688,7 +688,7 @@ void Instructions::initNonPrefixed() {
 		reg.setZero(reg.H == 0);
 		reg.setNegative(false);
 
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.PC += 1;
 	};
@@ -697,7 +697,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x35] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
-		uint8_t result = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t result = mem.read(getAddress(reg.H, reg.L));
 
 		reg.setHalfCarry(((result & 0xF) - (1 & 0xF)) & 0x10 == 0x10);
 
@@ -706,7 +706,7 @@ void Instructions::initNonPrefixed() {
 		reg.setZero(reg.H == 0);
 		reg.setNegative(true);
 
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.PC += 1;
 	};
@@ -715,7 +715,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x36] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, mem.read(reg.PC + 1));
+		mem.write(getAddress(reg.H, reg.L), mem.read(reg.PC + 1));
 
 		reg.PC += 2;
 	};
@@ -768,7 +768,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x3A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.H);
+		reg.A = mem.read(getAddress(reg.H, reg.L));
 		reg.L--;
 		if (reg.L == 0xFF) {
 			reg.H--;
@@ -892,7 +892,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x46] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.B = mem.read(getAddress(reg.H, reg.L));
 
 		reg.PC += 1;
 	};
@@ -964,7 +964,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x4E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.C = mem.read(getAddress(reg.H, reg.L));
 
 		reg.PC += 1;
 	};
@@ -1036,7 +1036,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x56] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.D = mem.read(getAddress(reg.H, reg.L));
 
 		reg.PC += 1;
 	};
@@ -1108,7 +1108,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x5E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.E = mem.read(getAddress(reg.H, reg.L));
 
 		reg.PC += 1;
 	};
@@ -1180,7 +1180,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x66] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.H = mem.read(getAddress(reg.H, reg.L));
 
 		reg.PC += 1;
 	};
@@ -1252,7 +1252,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x6E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.L = mem.read(getAddress(reg.H, reg.L));
 
 		reg.PC += 1;
 	};
@@ -1270,7 +1270,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x70] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		mem.write(((uint16_t) reg.H << 8) | reg.L, reg.B);
+		mem.write(getAddress(reg.H, reg.L), reg.B);
 
 		reg.PC += 1;
 	};
@@ -1279,7 +1279,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x71] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		mem.write(((uint16_t) reg.H << 8) | reg.L, reg.C);
+		mem.write(getAddress(reg.H, reg.L), reg.C);
 
 		reg.PC += 1;
 	};
@@ -1288,7 +1288,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x72] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		mem.write(((uint16_t) reg.H << 8) | reg.L, reg.D);
+		mem.write(getAddress(reg.H, reg.L), reg.D);
 
 		reg.PC += 1;
 	};
@@ -1297,7 +1297,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x73] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		mem.write(((uint16_t) reg.H << 8) | reg.L, reg.E);
+		mem.write(getAddress(reg.H, reg.L), reg.E);
 
 		reg.PC += 1;
 	};
@@ -1306,7 +1306,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x74] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		mem.write(((uint16_t) reg.H << 8) | reg.L, reg.H);
+		mem.write(getAddress(reg.H, reg.L), reg.H);
 
 		reg.PC += 1;
 	};
@@ -1315,7 +1315,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x75] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		mem.write(((uint16_t) reg.H << 8) | reg.L, reg.L);
+		mem.write(getAddress(reg.H, reg.L), reg.L);
 
 		reg.PC += 1;
 	};
@@ -1333,7 +1333,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x77] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		mem.write(((uint16_t) reg.H << 8) | reg.L, reg.A);
+		mem.write(getAddress(reg.H, reg.L), reg.A);
 
 		reg.PC += 1;
 	};
@@ -1396,7 +1396,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x7E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.A = mem.read(getAddress(reg.H, reg.L));
 
 		reg.PC += 1;
 	};
@@ -1510,7 +1510,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x86] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 		
-		uint8_t HL = (mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L));
+		uint8_t HL = (mem.read(getAddress(reg.H, reg.L)));
 		reg.setHalfCarry(((reg.A & 0xF) + (HL & 0xF)) & 0x10 == 0x10);
 		uint16_t result = (uint16_t) reg.A + (uint16_t) HL;
 
@@ -1639,7 +1639,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x8E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 		
-		uint8_t HL = (mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L));
+		uint8_t HL = (mem.read(getAddress(reg.H, reg.L)));
 		reg.setHalfCarry(((reg.A & 0xF) + (HL & 0xF) + (reg.getCarry() & 0xF)) & 0x10 == 0x10);
 		uint16_t result = (uint16_t) reg.A + (uint16_t) HL + (uint16_t) reg.getCarry();
 
@@ -1774,7 +1774,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x96] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 		
-		uint8_t HL = (mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L));
+		uint8_t HL = (mem.read(getAddress(reg.H, reg.L)));
 		reg.setHalfCarry(((reg.A & 0xF) - (HL & 0xF)) & 0x10 == 0x10);
 		uint16_t result = (uint16_t) reg.A - (uint16_t) HL;
 		
@@ -1911,7 +1911,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x9E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 		
-		uint8_t HL = (mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L));
+		uint8_t HL = (mem.read(getAddress(reg.H, reg.L)));
 		reg.setHalfCarry(((reg.A & 0xF) - (HL & 0xF) - (reg.getCarry() & 0xF)) & 0x10 == 0x10);
 		uint16_t result = (uint16_t) reg.A - (uint16_t) HL - (uint16_t) reg.getCarry();
 		
@@ -2030,7 +2030,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0xA6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.A &= mem.read(getAddress(reg.H, reg.L));
 
 		reg.setZero(reg.A == 0);
 		reg.setNegative(false);
@@ -2142,7 +2142,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0xAE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A ^= mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.A ^= mem.read(getAddress(reg.H, reg.L));
 
 		reg.setZero(reg.A == 0);
 		reg.setNegative(false);
@@ -2253,7 +2253,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0xB6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		reg.A |= mem.read(getAddress(reg.H, reg.L));
 
 		reg.setZero(reg.A == 0);
 		reg.setNegative(false);
@@ -2364,7 +2364,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0xBE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = (mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L));
+		uint8_t HL = (mem.read(getAddress(reg.H, reg.L)));
 		uint8_t result = reg.A - HL;
 
 		reg.setZero(result == 0);
@@ -3045,7 +3045,7 @@ void Instructions::initNonPrefixed() {
 		reg.PC += 2;
 	};
 
-	// LD SP,HL
+	// LD SP,HL  // TODO: little endian?
 	nonPrefixed[0xF9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
@@ -3198,11 +3198,11 @@ void Instructions::initPrefixed() {
 	prefixed[0x06] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 16;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 		reg.setCarry((HL & 0x80) >> 7);
 
 		uint8_t result = HL << 1 | reg.getCarry();
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.setZero(result == 0);
 		reg.setNegative(false);
@@ -3313,11 +3313,11 @@ void Instructions::initPrefixed() {
 	prefixed[0x0E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 16;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 		reg.setCarry(HL &0x1);
 
 		uint8_t result = reg.getCarry() << 7 | HL >> 1;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.setZero(result == 0);
 		reg.setNegative(false);
@@ -3452,13 +3452,13 @@ void Instructions::initPrefixed() {
 	prefixed[0x16] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
 		bool tempCarry = reg.getCarry();
 		bool newCarry = HL >> 7;
 
 		uint8_t result = HL << 1 | tempCarry;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.setCarry(newCarry);
 
@@ -3587,12 +3587,12 @@ void Instructions::initPrefixed() {
 	prefixed[0x16] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 		bool tempCarry = reg.getCarry();
 
 		reg.setCarry(HL & 0x1);
 		uint8_t result = tempCarry << 7 | HL >> 1;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.setZero(result == 0);
 		reg.setNegative(false);
@@ -3705,12 +3705,12 @@ void Instructions::initPrefixed() {
 	prefixed[0x26] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
 		reg.setCarry(HL & (1 << 7) >> 7);
 		uint8_t result = HL << 1;
 
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.setZero(result == 0);
 		reg.setNegative(false);
@@ -3833,13 +3833,13 @@ void Instructions::initPrefixed() {
 	prefixed[0x2D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
 		bool bit7 = HL >> 7;
 		reg.setCarry(HL & 0x1);
 
 		uint8_t result = bit7 << 7 | reg.L >> 1;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		mem.write(getAddress(reg.H, reg.L), result);
 
 		reg.setZero(reg.L == 0);
 		reg.setNegative(false);
@@ -3852,14 +3852,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x2F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		bool bit7 = reg.A >> 7;
-
-		reg.setCarry(reg.A & 0x1);
-		reg.A = bit7 << 7 | reg.A >> 1;
-
-		reg.setZero(reg.A == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SWAP(reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -3868,14 +3861,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x30] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t hi = reg.B >> 4;
-		uint8_t lo = reg.B & 0xF;
-		reg.B = lo << 4 | hi;
-
-		reg.setZero(reg.B == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -3884,14 +3870,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x31] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t hi = reg.C >> 4;
-		uint8_t lo = reg.C & 0xF;
-		reg.C = lo << 4 | hi;
-
-		reg.setZero(reg.C == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -3900,14 +3879,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x32] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t hi = reg.D >> 4;
-		uint8_t lo = reg.D & 0xF;
-		reg.D = lo << 4 | hi;
-
-		reg.setZero(reg.D == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -3916,14 +3888,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x33] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t hi = reg.E >> 4;
-		uint8_t lo = reg.E & 0xF;
-		reg.E = lo << 4 | hi;
-
-		reg.setZero(reg.E == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -3932,14 +3897,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x34] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t hi = reg.H >> 4;
-		uint8_t lo = reg.H & 0xF;
-		reg.H = lo << 4 | hi;
-
-		reg.setZero(reg.H == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -3948,14 +3906,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x35] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t hi = reg.L >> 4;
-		uint8_t lo = reg.L & 0xF;
-		reg.L = lo << 4 | hi;
-
-		reg.setZero(reg.L == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -3964,16 +3915,11 @@ void Instructions::initPrefixed() {
 	prefixed[0x36] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		uint8_t hi = HL >> 4;
-		uint8_t lo = HL & 0xF;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, lo << 4 | hi);
-
-		reg.setZero(HL == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(HL, reg);
+		
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -3982,14 +3928,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x37] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t hi = reg.A >> 4;
-		uint8_t lo = reg.A & 0xF;
-		reg.A = lo << 4 | hi;
-
-		reg.setZero(reg.A == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
-		reg.setCarry(false);
+		op_SWAP(reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -3998,12 +3937,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x38] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setCarry(reg.B & 0x1);
-		reg.B >>=1;
-
-		reg.setZero(reg.B == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SRL(reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4012,12 +3946,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x39] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setCarry(reg.C & 0x1);
-		reg.C >>=1;
-
-		reg.setZero(reg.C == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SRL(reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4026,12 +3955,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x3A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setCarry(reg.D & 0x1);
-		reg.D >>=1;
-
-		reg.setZero(reg.D == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SRL(reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4040,12 +3964,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x3B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setCarry(reg.E & 0x1);
-		reg.E >>=1;
-
-		reg.setZero(reg.E == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SRL(reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4054,12 +3973,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x3C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setCarry(reg.H & 0x1);
-		reg.H >>=1;
-
-		reg.setZero(reg.H == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SRL(reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4068,12 +3982,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x3D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setCarry(reg.L & 0x1);
-		reg.L >>=1;
-
-		reg.setZero(reg.L == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SRL(reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4082,16 +3991,11 @@ void Instructions::initPrefixed() {
 	prefixed[0x3E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setCarry(HL & 0x1);
-		uint8_t result = HL >> 1;
+		op_SRL(HL, reg);
 
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
-
-		reg.setZero(reg.L == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -4100,12 +4004,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x3F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setCarry(reg.A & 0x1);
-		reg.A >>=1;
-
-		reg.setZero(reg.A == 0);
-		reg.setNegative(false);
-		reg.setHalfCarry(false);
+		op_SRL(reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4114,9 +4013,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x40] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4125,9 +4022,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x41] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4136,9 +4031,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x42] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4147,9 +4040,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x43] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4158,9 +4049,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x44] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4169,9 +4058,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x45] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4180,11 +4067,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x46] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4193,9 +4078,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x47] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b00000001 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(0, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4204,9 +4087,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x48] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4215,9 +4096,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x49] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4226,9 +4105,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x4A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4237,9 +4114,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x4B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4248,9 +4123,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x4C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4259,9 +4132,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x4D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4270,11 +4141,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x4E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4283,9 +4152,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x4F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b00000010 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(1, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4294,9 +4161,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x50] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4305,9 +4170,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x51] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4316,9 +4179,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x52] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4327,9 +4188,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x53] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4338,9 +4197,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x54] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4349,9 +4206,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x55] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4360,11 +4215,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x56] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4373,9 +4226,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x57] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b00000100 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(2, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4384,9 +4235,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x58] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4395,9 +4244,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x59] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4406,9 +4253,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x5A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4417,9 +4262,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x5B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4428,9 +4271,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x5C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4439,9 +4280,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x5D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4450,11 +4289,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x5E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4463,9 +4300,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x5F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b00001000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(3, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4474,9 +4309,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x60] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4485,9 +4318,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x61] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4496,9 +4327,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x62] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4507,9 +4336,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x63] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4518,9 +4345,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x64] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4529,9 +4354,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x65] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4540,11 +4363,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x66] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4553,9 +4374,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x67] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b00010000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(4, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4564,9 +4383,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x68] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4575,9 +4392,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x69] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4586,9 +4401,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x6A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4597,9 +4410,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x6B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4608,9 +4419,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x6C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4619,9 +4428,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x6D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4630,11 +4437,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x6E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4643,9 +4448,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x6F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b00100000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(5, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4654,9 +4457,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x70] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4665,9 +4466,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x71] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4676,9 +4475,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x72] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4687,9 +4484,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x73] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4698,9 +4493,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x74] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4709,9 +4502,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x75] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4720,11 +4511,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x76] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4733,9 +4522,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x77] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b01000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(6, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4744,9 +4531,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x78] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.B & 0b10000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, reg.B, reg);
 
 		reg.PC += 2;
 	};
@@ -4755,9 +4540,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x79] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.C & 0b10000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, reg.C, reg);
 
 		reg.PC += 2;
 	};
@@ -4766,9 +4549,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x7A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.D & 0b10000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, reg.D, reg);
 
 		reg.PC += 2;
 	};
@@ -4777,9 +4558,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x7B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.E & 0b10000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, reg.E, reg);
 
 		reg.PC += 2;
 	};
@@ -4788,9 +4567,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x7C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(!(reg.H >> 7));
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, reg.H, reg);
 
 		reg.PC += 2;
 	};
@@ -4799,9 +4576,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x7D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.L & 0b10000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, reg.L, reg);
 
 		reg.PC += 2;
 	};
@@ -4810,11 +4585,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x7E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
 
-		reg.setZero(HL & 0b10000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, HL, reg);
 
 		reg.PC += 2;
 	};
@@ -4823,9 +4596,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x7F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.A & 0b10000000 == 0b00000000);
-		reg.setNegative(false);
-		reg.setHalfCarry(true);
+		op_BIT(7, reg.A, reg);
 
 		reg.PC += 2;
 	};
@@ -4834,7 +4605,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x80] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b11111110;
+		op_RES(0, reg.B);
 
 		reg.PC += 2;
 	};
@@ -4843,7 +4614,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x81] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b11111110;
+		op_RES(0, reg.C);
 
 		reg.PC += 2;
 	};
@@ -4852,7 +4623,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x82] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b11111110;
+		op_RES(0, reg.D);
 
 		reg.PC += 2;
 	};
@@ -4861,7 +4632,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x83] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b11111110;
+		op_RES(0, reg.E);
 
 		reg.PC += 2;
 	};
@@ -4870,7 +4641,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x84] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b11111110;
+		op_RES(0, reg.H);
 
 		reg.PC += 2;
 	};
@@ -4879,7 +4650,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x85] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b11111110;
+		op_RES(0, reg.L);
 
 		reg.PC += 2;
 	};
@@ -4888,9 +4659,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x86] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b11111110;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(0, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -4899,7 +4670,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x87] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b11111110;
+		op_RES(0, reg.A);
 
 		reg.PC += 2;
 	};
@@ -4908,7 +4679,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x88] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b11111101;
+		op_RES(1, reg.B);
 
 		reg.PC += 2;
 	};
@@ -4917,7 +4688,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x89] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b11111101;
+		op_RES(1, reg.C);
 
 		reg.PC += 2;
 	};
@@ -4926,7 +4697,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x8A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b11111101;
+		op_RES(1, reg.D);
 
 		reg.PC += 2;
 	};
@@ -4935,7 +4706,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x8B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b11111101;
+		op_RES(1, reg.E);
 
 		reg.PC += 2;
 	};
@@ -4944,7 +4715,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x8C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b11111101;
+		op_RES(1, reg.H);
 
 		reg.PC += 2;
 	};
@@ -4953,7 +4724,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x8D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b11111101;
+		op_RES(1, reg.L);
 
 		reg.PC += 2;
 	};
@@ -4962,9 +4733,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x8E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b11111101;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(1, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -4973,7 +4744,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x8F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b11111101;
+		op_RES(1, reg.A);
 
 		reg.PC += 2;
 	};
@@ -4982,7 +4753,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x90] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b11111011;
+		op_RES(2, reg.B);
 
 		reg.PC += 2;
 	};
@@ -4991,7 +4762,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x91] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b11111011;
+		op_RES(2, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5000,7 +4771,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x92] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b11111011;
+		op_RES(2, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5009,7 +4780,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x93] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b11111011;
+		op_RES(2, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5018,7 +4789,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x94] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b11111011;
+		op_RES(2, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5027,7 +4798,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x95] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b11111011;
+		op_RES(2, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5036,9 +4807,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x96] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b11111011;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(2, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5047,7 +4818,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x97] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b11111011;
+		op_RES(2, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5056,7 +4827,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x98] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b11110111;
+		op_RES(3, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5065,7 +4836,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x99] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b11110111;
+		op_RES(3, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5074,7 +4845,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x9A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b11110111;
+		op_RES(3, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5083,7 +4854,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x9B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b11110111;
+		op_RES(3, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5092,7 +4863,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x9C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b11110111;
+		op_RES(3, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5101,7 +4872,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x9D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b11110111;
+		op_RES(3, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5110,9 +4881,9 @@ void Instructions::initPrefixed() {
 	prefixed[0x9E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b11110111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(3, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5121,7 +4892,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x9F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b11110111;
+		op_RES(3, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5130,7 +4901,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b11101111;
+		op_RES(4, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5139,7 +4910,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b11101111;
+		op_RES(4, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5148,7 +4919,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b11101111;
+		op_RES(4, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5157,7 +4928,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b11101111;
+		op_RES(4, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5166,7 +4937,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b11101111;
+		op_RES(4, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5175,7 +4946,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b11101111;
+		op_RES(4, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5184,9 +4955,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xA6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b11101111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(4, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5195,7 +4966,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b11101111;
+		op_RES(4, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5204,7 +4975,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b11011111;
+		op_RES(5, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5213,7 +4984,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xA9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b11011111;
+		op_RES(5, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5222,7 +4993,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xAA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b11011111;
+		op_RES(5, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5231,7 +5002,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xAB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b11011111;
+		op_RES(5, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5240,7 +5011,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xAC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b11011111;
+		op_RES(5, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5249,7 +5020,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xAD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b11011111;
+		op_RES(5, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5258,9 +5029,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xAE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b11011111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(5, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5269,7 +5040,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xAF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b11011111;
+		op_RES(5, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5278,7 +5049,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b10111111;
+		op_RES(6, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5287,7 +5058,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b10111111;
+		op_RES(6, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5296,7 +5067,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b10111111;
+		op_RES(6, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5305,7 +5076,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b10111111;
+		op_RES(6, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5314,7 +5085,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b10111111;
+		op_RES(6, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5323,7 +5094,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b10111111;
+		op_RES(6, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5332,9 +5103,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xB6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b10111111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(6, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5343,7 +5114,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b10111111;
+		op_RES(6, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5352,7 +5123,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B &= 0b01111111;
+		op_RES(7, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5361,7 +5132,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xB9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C &= 0b01111111;
+		op_RES(7, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5370,7 +5141,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xBA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D &= 0b01111111;
+		op_RES(7, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5379,7 +5150,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xBB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E &= 0b01111111;
+		op_RES(7, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5388,7 +5159,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xBC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H &= 0b01111111;
+		op_RES(7, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5397,7 +5168,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xBD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L &= 0b01111111;
+		op_RES(7, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5406,9 +5177,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xBE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL & 0b01111111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_RES(7, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5417,7 +5188,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xBF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A &= 0b01111111;
+		op_RES(7, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5426,7 +5197,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b00000001;
+		op_SET(0, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5435,7 +5206,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b00000001;
+		op_SET(0, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5444,7 +5215,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b00000001;
+		op_SET(0, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5453,7 +5224,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b00000001;
+		op_SET(0, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5462,7 +5233,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b00000001;
+		op_SET(0, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5471,7 +5242,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b00000001;
+		op_SET(0, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5480,9 +5251,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xC6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b00000001;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(0, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5491,7 +5262,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b00000001;
+		op_SET(0, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5500,7 +5271,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b00000010;
+		op_SET(1, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5509,7 +5280,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xC9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b00000010;
+		op_SET(1, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5518,7 +5289,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xCA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b00000010;
+		op_SET(1, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5527,7 +5298,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xCB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b00000010;
+		op_SET(1, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5536,7 +5307,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xCC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b00000010;
+		op_SET(1, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5545,7 +5316,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xCD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b00000010;
+		op_SET(1, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5554,9 +5325,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xCE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b00000010;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(1, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5565,7 +5336,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xCF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b00000010;
+		op_SET(1, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5574,7 +5345,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b00000100;
+		op_SET(2, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5583,7 +5354,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b00000100;
+		op_SET(2, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5592,7 +5363,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b00000100;
+		op_SET(2, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5601,7 +5372,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b00000100;
+		op_SET(2, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5610,7 +5381,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b00000100;
+		op_SET(2, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5619,7 +5390,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b00000100;
+		op_SET(2, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5628,9 +5399,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xD6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b00000100;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(2, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5639,7 +5410,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b00000100;
+		op_SET(2, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5648,7 +5419,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b00001000;
+		op_SET(3, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5657,7 +5428,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xD9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b00001000;
+		op_SET(3, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5666,7 +5437,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xDA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b00001000;
+		op_SET(3, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5675,7 +5446,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xDB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b00001000;
+		op_SET(3, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5684,7 +5455,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xDC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b00001000;
+		op_SET(3, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5693,7 +5464,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xDD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b00001000;
+		op_SET(3, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5702,9 +5473,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xDE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b00001000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(3, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5713,7 +5484,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xDF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b00001000;
+		op_SET(3, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5722,7 +5493,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b00010000;
+		op_SET(4, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5731,7 +5502,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b00010000;
+		op_SET(4, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5740,7 +5511,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b00010000;
+		op_SET(4, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5749,7 +5520,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b00010000;
+		op_SET(4, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5758,7 +5529,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b00010000;
+		op_SET(4, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5767,7 +5538,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b00010000;
+		op_SET(4, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5776,9 +5547,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xE6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b00010000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(4, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5787,7 +5558,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b00010000;
+		op_SET(4, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5796,7 +5567,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b00100000;
+		op_SET(5, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5805,7 +5576,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xE9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b00100000;
+		op_SET(5, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5814,7 +5585,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xEA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b00100000;
+		op_SET(5, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5823,7 +5594,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xEB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b00100000;
+		op_SET(5, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5832,7 +5603,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xEC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b00100000;
+		op_SET(5, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5841,7 +5612,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xED] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b00100000;
+		op_SET(5, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5850,9 +5621,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xEE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b00100000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(5, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5861,7 +5632,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xEF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b00100000;
+		op_SET(5, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5870,7 +5641,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b01000000;
+		op_SET(6, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5879,7 +5650,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF1] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b01000000;
+		op_SET(6, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5888,7 +5659,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b01000000;
+		op_SET(6, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5897,7 +5668,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b01000000;
+		op_SET(6, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5906,7 +5677,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF4] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b01000000;
+		op_SET(6, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5915,7 +5686,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF5] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b01000000;
+		op_SET(6, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5924,9 +5695,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xF6] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b01000000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(6, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -5935,7 +5706,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF7] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b01000000;
+		op_SET(6, reg.A);
 
 		reg.PC += 2;
 	};
@@ -5944,7 +5715,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF8] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.B |= 0b10000000;
+		op_SET(7, reg.B);
 
 		reg.PC += 2;
 	};
@@ -5953,7 +5724,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xF9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.C |= 0b10000000;
+		op_SET(7, reg.C);
 
 		reg.PC += 2;
 	};
@@ -5962,7 +5733,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xFA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.D |= 0b10000000;
+		op_SET(7, reg.D);
 
 		reg.PC += 2;
 	};
@@ -5971,7 +5742,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xFB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.E |= 0b10000000;
+		op_SET(7, reg.E);
 
 		reg.PC += 2;
 	};
@@ -5980,7 +5751,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xFC] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.H |= 0b10000000;
+		op_SET(7, reg.H);
 
 		reg.PC += 2;
 	};
@@ -5989,7 +5760,7 @@ void Instructions::initPrefixed() {
 	prefixed[0xFD] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.L |= 0b10000000;
+		op_SET(7, reg.L);
 
 		reg.PC += 2;
 	};
@@ -5998,9 +5769,9 @@ void Instructions::initPrefixed() {
 	prefixed[0xFE] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
-		uint8_t result = HL | 0b10000000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
+		uint8_t HL = mem.read(getAddress(reg.H, reg.L));
+		op_SET(7, HL);
+		mem.write(getAddress(reg.H, reg.L), HL);
 
 		reg.PC += 2;
 	};
@@ -6009,8 +5780,60 @@ void Instructions::initPrefixed() {
 	prefixed[0xFF] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.A |= 0b10000000;
+		op_SET(7, reg.A);
 
 		reg.PC += 2;
 	};
+}
+
+namespace {
+	uint16_t getAddress(uint8_t a, uint8_t b) {
+		return (uint16_t) a << 8 | (uint16_t) b;
+	}
+
+	void op_SRA(uint8_t& data, Registers& reg) {
+		bool bit7 = data >> 7;
+
+		reg.setCarry(data & 0x1);
+		data = bit7 << 7 | data >> 1;
+
+		reg.setZero(data == 0);
+		reg.setNegative(false);
+		reg.setHalfCarry(false);
+	}
+
+	void op_SWAP(uint8_t& data, Registers& reg) {
+		uint8_t hi = data >> 4;
+		uint8_t lo = data & 0xF;
+		data = lo << 4 | hi;
+
+		reg.setZero(data == 0);
+		reg.setNegative(false);
+		reg.setHalfCarry(false);
+		reg.setCarry(false);
+	}
+
+	void op_SRL(uint8_t& data, Registers& reg) {
+		reg.setCarry(data & 0x1);
+		
+		data >>= 1;
+
+		reg.setZero(data == 0);
+		reg.setNegative(false);
+		reg.setHalfCarry(false);
+	}
+
+	void op_BIT(int bit, uint8_t& data, Registers& reg) {
+		reg.setZero(!(data >> bit));
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+	}
+
+	void op_RES(int bit, uint8_t& data) {
+		data &= ~(1 << bit);
+	}
+
+	void op_SET(int bit, uint8_t& data) {
+		data |= 1 << bit;
+	}
 }
