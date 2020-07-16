@@ -4172,7 +4172,7 @@ void Instructions::initPrefixed() {
 		reg.PC += 2;
 	};
 
-	// BIT 0,B
+	// BIT 0,(HL)
 	prefixed[0x46] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
@@ -4352,7 +4352,7 @@ void Instructions::initPrefixed() {
 		reg.PC += 2;
 	};
 
-	// BIT 2,B
+	// BIT 2,(HL)
 	prefixed[0x56] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
@@ -4460,6 +4460,366 @@ void Instructions::initPrefixed() {
 		cycles = 8;
 
 		reg.setZero(reg.A & 0b00001000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,B
+	prefixed[0x60] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.B & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,C
+	prefixed[0x61] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.C & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,D
+	prefixed[0x62] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.D & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,E
+	prefixed[0x63] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.E & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,H
+	prefixed[0x64] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.H & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,L
+	prefixed[0x65] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.L & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,(HL)
+	prefixed[0x66] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+
+		reg.setZero(HL & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 4,A
+	prefixed[0x67] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.A & 0b00010000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,B
+	prefixed[0x68] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.B & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,C
+	prefixed[0x69] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.C & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,D
+	prefixed[0x6A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.D & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,E
+	prefixed[0x6B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.E & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,H
+	prefixed[0x6C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.H & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,L
+	prefixed[0x6D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.L & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,(HL)
+	prefixed[0x6E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+
+		reg.setZero(HL & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 5,A
+	prefixed[0x6F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.A & 0b00100000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,B
+	prefixed[0x70] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.B & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,C
+	prefixed[0x71] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.C & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,D
+	prefixed[0x72] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.D & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,E
+	prefixed[0x73] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.E & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,H
+	prefixed[0x74] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.H & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,L
+	prefixed[0x75] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.L & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,(HL)
+	prefixed[0x76] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+
+		reg.setZero(HL & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 6,A
+	prefixed[0x77] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.A & 0b01000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,B
+	prefixed[0x78] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.B & 0b10000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,C
+	prefixed[0x79] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.C & 0b10000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,D
+	prefixed[0x7A] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.D & 0b10000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,E
+	prefixed[0x7B] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.E & 0b10000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,H
+	prefixed[0x7C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.H & 0b10000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,L
+	prefixed[0x7D] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.L & 0b10000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,(HL)
+	prefixed[0x7E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
+
+		reg.setZero(HL & 0b10000000 == 0b00000000);
+		reg.setNegative(false);
+		reg.setHalfCarry(true);
+
+		reg.PC += 2;
+	};
+
+	// BIT 7,A
+	prefixed[0x7F] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+		cycles = 8;
+
+		reg.setZero(reg.A & 0b10000000 == 0b00000000);
 		reg.setNegative(false);
 		reg.setHalfCarry(true);
 
