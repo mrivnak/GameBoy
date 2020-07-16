@@ -1,6 +1,7 @@
 #include "memory-bus.hpp"
 
 #include <cstdlib>
+#include <cstdio>
 
 uint8_t MemoryBus::read(const uint16_t address) const {
 	switch (address) {
@@ -33,7 +34,7 @@ uint8_t MemoryBus::read(const uint16_t address) const {
 			return interruptsEnable;
 		default:
 			// 0xFEA0 ... 0xFEFF Not usable
-			std::cerr << "ERROR: Attempt to read non-readable memory address: " << address << std::endl;
+			fprintf(stderr,"ERROR: Attempt to read non-readable memory address: 0x%X\n", address);
 			exit(1);
 			// TODO: handle this better
 	}
@@ -119,7 +120,7 @@ void MemoryBus::write(const uint16_t address, const uint8_t byte) {
 			break;
 		default:
 			// 0xFEA0 ... 0xFEFF Not usable
-			std::cerr << "ERROR: Attempt to write non-writeable memory address: " << address << std::endl;
+			fprintf(stderr,"ERROR: Attempt to write non-writeable memory address: 0x%X\n", address);
 			exit(1);
 			// TODO: handle this better
 	}

@@ -1,7 +1,7 @@
 #include "registers.hpp"
 
 void Registers::setZero(bool zero) {
-	setFlag(Flags::FLAG_CARRY, zero);
+	setFlag(Flags::FLAG_ZERO, zero);
 }
 
 void Registers::setNegative(bool negative) {
@@ -26,7 +26,7 @@ void Registers::setFlag(uint8_t flag, bool set) {
 }
 
 bool Registers::getZero() const {
-	return F & Flags::FLAG_ZERO;
+	return (F & Flags::FLAG_ZERO) >> 7;
 }
 
 bool Registers::getNegative() const {

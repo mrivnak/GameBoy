@@ -62,45 +62,9 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	// TODO: 
-	/*
-	std::FILE* game_file = std::fopen(gameFilename.c_str(), "r");
-
-	if (!game_file) {
-		std::perror("Failed to open game file");
-		std::cerr << "Filename: " << gameFilename << std::endl;
-		return 1;
-	}
-
-	std::FILE* boot_file = std::fopen("../res/DMG_ROM.bin", "r");
-
-	if (!boot_file) {
-		std::cerr << "Failed to open Boot ROM file" << std::endl;
-		return 1;
-	}
-
-	if (std::fread(processor.getMemory().getData(), 1, BOOT_ROM_SIZE, boot_file)
-			!= BOOT_ROM_SIZE) {
-		std::fputs("Failed to write boot ROM!", stderr);
-		std::fclose(boot_file);
-
-		return 1;
-	}
-
-	std::fclose(boot_file);
-
-	const uint8_t TEST_PROGRAM[] = {
-		0x00, // NOP
-		0x10, // STOP
-		0x20, (uint8_t)(-4), // JR NZ, 1h
-	};
-
-	std::memcpy(processor.getMemory().getData(), TEST_PROGRAM, sizeof(TEST_PROGRAM));
-	*/
-
 	Motherboard motherboard;
 
-	motherboard.loadCartridge(gameFilename);
+	// motherboard.loadCartridge(gameFilename);
 	motherboard.loadBootROM();
 
 	std::string gameTitle = motherboard.getTitle();
@@ -122,16 +86,23 @@ int main(int argc, char** argv) {
 
 	Texture tex(bmp);
 
+	int frameCounter = 0;  // TODO: Replace frame counter with V-Blank interrupts
 	while (app.isRunning()) {
-		app.pollEvents();
-
-		// processor exec is going in here for now
 		motherboard.clock();
 
-		renderDevice.clear();
-		renderDevice.drawTexturedQuad(tex);
+		if (frameCounter % 70220 == 0) {  // Not exact
+			app.pollEvents();
 
-		window.swapBuffers();
+			renderDevice.clear();
+			renderDevice.drawTexturedQuad(tex);
+
+			window.swapBuffers();
+		}
+		
+		frameCounter++;
+
+		if (frameCounter == 70220)
+			frameCounter = 0;
 	}
 
 	return 0;

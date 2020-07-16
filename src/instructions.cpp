@@ -35,8 +35,8 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x01] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
-		reg.B = mem.read(reg.PC + 1);
-		reg.C = mem.read(reg.PC + 2);
+		reg.B = mem.read(reg.PC + 2);
+		reg.C = mem.read(reg.PC + 1);
 
 		reg.PC += 3;
 	};
@@ -117,8 +117,8 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x08] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 20;
 
-		mem.write(((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2), (uint8_t) reg.SP & 0xFF);
-		mem.write((((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2)) + 1, (uint8_t) reg.SP >> 8);
+		mem.write(((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1), (uint8_t) reg.SP & 0xFF);
+		mem.write((((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1)) + 1, (uint8_t) reg.SP >> 8);
 
 		reg.PC += 3;
 	};
@@ -226,8 +226,8 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x11] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
-		reg.D = mem.read(reg.PC + 1);
-		reg.E = mem.read(reg.PC + 2);
+		reg.D = mem.read(reg.PC + 2);
+		reg.E = mem.read(reg.PC + 1);
 
 		reg.PC += 3;
 	};
@@ -412,8 +412,10 @@ void Instructions::initNonPrefixed() {
 
 		if (!reg.getZero()) {
 			cycles = 12;
-			int8_t offset = mem.read(reg.PC + 1) + 1;
-			reg.PC += (uint16_t) offset;
+			reg.PC += (int8_t) mem.read(reg.PC + 1);
+		}
+		else {
+			printf("JR NZ, false\n");
 		}
 
 		reg.PC += 2;
@@ -423,8 +425,8 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x21] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
-		reg.H = mem.read(reg.PC + 1);
-		reg.L = mem.read(reg.PC + 2);
+		reg.H = mem.read(reg.PC + 2);
+		reg.L = mem.read(reg.PC + 1);
 
 		reg.PC += 3;
 	};
@@ -644,7 +646,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0x31] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
-		reg.SP = (uint16_t) mem.read(reg.PC + 1) << 8 | (uint16_t) mem.read(reg.PC + 2);
+		reg.SP = (uint16_t) mem.read(reg.PC + 2) << 8 | (uint16_t) mem.read(reg.PC + 1);
 
 		reg.PC += 3;
 	};
@@ -658,6 +660,8 @@ void Instructions::initNonPrefixed() {
 		if (reg.L == 0xFF) {
 			reg.H--;
 		}
+
+		// printf("HL: %X%X\n", reg.H, reg.L);
 
 		reg.PC += 1;
 	};
@@ -2390,7 +2394,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 8;
 
 		if (!reg.getZero()) {
-			reg.PC = ((uint16_t) mem.read(reg.SP) << 8) | (uint16_t) mem.read(reg.SP + 1);
+			reg.PC = ((uint16_t) mem.read(reg.SP + 1) << 8) | (uint16_t) mem.read(reg.SP);
 			reg.SP += 2;
 			cycles = 20;
 		}
@@ -2416,7 +2420,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 12;
 
 		if (!reg.getZero()) {
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 			cycles = 16;
 		}
 		else {
@@ -2428,7 +2432,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0xC3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 16;
 
-		reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+		reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 	};
 
 	// CALL NZ,u16
@@ -2445,7 +2449,7 @@ void Instructions::initNonPrefixed() {
 			mem.write(reg.SP, hi);
 			reg.SP--;
 			mem.write(reg.SP, lo);
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 		}
 		else {
 			reg.PC += 3;
@@ -2500,7 +2504,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 8;
 
 		if (reg.getZero()) {
-			reg.PC = ((uint16_t) mem.read(reg.SP) << 8) | (uint16_t) mem.read(reg.SP + 1);
+			reg.PC = ((uint16_t) mem.read(reg.SP + 1) << 8) | (uint16_t) mem.read(reg.SP);
 			reg.SP += 2;
 			cycles = 20;
 		}
@@ -2513,7 +2517,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0xC9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 16;
 
-		reg.PC = ((uint16_t) mem.read(reg.SP) << 8) | (uint16_t) mem.read(reg.SP + 1);
+		reg.PC = ((uint16_t) mem.read(reg.SP + 1) << 8) | (uint16_t) mem.read(reg.SP);
 		reg.SP += 2;
 	};
 
@@ -2522,7 +2526,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 12;
 
 		if (reg.getZero()) {
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 			cycles = 16;
 		}
 		else {
@@ -2546,7 +2550,7 @@ void Instructions::initNonPrefixed() {
 			mem.write(reg.SP, hi);
 			reg.SP--;
 			mem.write(reg.SP, lo);
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 		}
 		else {
 			reg.PC += 3;
@@ -2564,7 +2568,7 @@ void Instructions::initNonPrefixed() {
 		mem.write(reg.SP, hi);
 		reg.SP--;
 		mem.write(reg.SP, lo);
-		reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+		reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 	};
 
 	// ADC A,u8
@@ -2603,7 +2607,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 8;
 
 		if (!reg.getCarry()) {
-			reg.PC = ((uint16_t) mem.read(reg.SP) << 8) | (uint16_t) mem.read(reg.SP + 1);
+			reg.PC = ((uint16_t) mem.read(reg.SP + 1) << 8) | (uint16_t) mem.read(reg.SP);
 			reg.SP += 2;
 			cycles = 20;
 		}
@@ -2629,7 +2633,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 12;
 
 		if (!reg.getCarry()) {
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 			cycles = 16;
 		}
 		else {
@@ -2653,7 +2657,7 @@ void Instructions::initNonPrefixed() {
 			mem.write(reg.SP, hi);
 			reg.SP--;
 			mem.write(reg.SP, lo);
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 		}
 		else {
 			reg.PC += 3;
@@ -2709,7 +2713,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 8;
 
 		if (reg.getCarry()) {
-			reg.PC = ((uint16_t) mem.read(reg.SP) << 8) | (uint16_t) mem.read(reg.SP + 1);
+			reg.PC = ((uint16_t) mem.read(reg.SP + 1) << 8) | (uint16_t) mem.read(reg.SP);
 			reg.SP += 2;
 			cycles = 20;
 		}
@@ -2721,7 +2725,7 @@ void Instructions::initNonPrefixed() {
 	// RETI
 	nonPrefixed[0xD9] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 
-		reg.PC = ((uint16_t) mem.read(reg.SP) << 8) | (uint16_t) mem.read(reg.SP + 1);
+		reg.PC = ((uint16_t) mem.read(reg.SP + 1) << 8) | (uint16_t) mem.read(reg.SP);
 		reg.SP += 2;
 
 		mem.interruptsEnable = true;
@@ -2732,7 +2736,7 @@ void Instructions::initNonPrefixed() {
 		cycles = 12;
 
 		if (reg.getCarry()) {
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 			cycles = 16;
 		}
 		else {
@@ -2756,7 +2760,7 @@ void Instructions::initNonPrefixed() {
 			mem.write(reg.SP, hi);
 			reg.SP--;
 			mem.write(reg.SP, lo);
-			reg.PC = ((uint16_t) mem.read(reg.PC + 1) << 8) | (uint16_t) mem.read(reg.PC + 2);
+			reg.PC = ((uint16_t) mem.read(reg.PC + 2) << 8) | (uint16_t) mem.read(reg.PC + 1);
 		}
 		else {
 			reg.PC += 2;
@@ -2900,7 +2904,7 @@ void Instructions::initNonPrefixed() {
 	nonPrefixed[0xEA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 16;
 
-		mem.write((uint16_t) mem.read(reg.PC + 1) << 8 | (uint16_t) mem.read(reg.PC + 2), reg.A);
+		mem.write((uint16_t) mem.read(reg.PC + 2) << 8 | (uint16_t) mem.read(reg.PC + 1), reg.A);
 
 		reg.PC += 3;
 	};
@@ -3051,16 +3055,16 @@ void Instructions::initNonPrefixed() {
 	};
 
 	// LD A,(u16)
-	nonPrefixed[0xF0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0xFA] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 16;
 
-		reg.A = mem.read((uint16_t) mem.read(reg.PC + 1) << 8 | (uint16_t) mem.read(reg.PC + 2));
+		reg.A = mem.read((uint16_t) mem.read(reg.PC + 2) << 8 | (uint16_t) mem.read(reg.PC + 1));
 
 		reg.PC += 3;
 	};
 
 	// 0xFB EI
-	nonPrefixed[0xF0] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
+	nonPrefixed[0xFB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 4;
 
 		// TODO: implement interrupts
@@ -4784,7 +4788,7 @@ void Instructions::initPrefixed() {
 	prefixed[0x7C] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 8;
 
-		reg.setZero(reg.H & 0b10000000 == 0b00000000);
+		reg.setZero(!(reg.H >> 7));
 		reg.setNegative(false);
 		reg.setHalfCarry(true);
 
@@ -4886,7 +4890,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b11111110;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -4960,7 +4964,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b11111101;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5034,7 +5038,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b11111011;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5108,7 +5112,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b11110111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5182,7 +5186,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b11101111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5256,7 +5260,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b11011111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5330,7 +5334,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b10111111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5404,7 +5408,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL & 0b01111111;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5478,7 +5482,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b00000001;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5552,7 +5556,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b00000010;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5626,7 +5630,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b00000100;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5700,7 +5704,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b00001000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5774,7 +5778,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b00010000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5848,7 +5852,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b00100000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5922,7 +5926,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b01000000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -5996,7 +6000,7 @@ void Instructions::initPrefixed() {
 
 		uint8_t HL = mem.read((uint16_t) reg.H << 8 | (uint16_t) reg.L);
 		uint8_t result = HL | 0b10000000;
-		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result)
+		mem.write((uint16_t) reg.H << 8 | (uint16_t) reg.L, result);
 
 		reg.PC += 2;
 	};
@@ -6009,6 +6013,4 @@ void Instructions::initPrefixed() {
 
 		reg.PC += 2;
 	};
-
-	// TODO: implement prefixed instructions
 }

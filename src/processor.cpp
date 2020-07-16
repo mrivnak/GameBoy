@@ -2,10 +2,11 @@
 
 #include "instructions.hpp"
 
-#include <iostream>
+#include <cstdio>
 
 Processor::Processor() {
 	cycles = 0;
+	registers.PC = 0;
 }
 
 void Processor::step() {
@@ -19,13 +20,11 @@ void Processor::step() {
 			}
 
 			if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {
+				printf("Instruction: 0x%s%X;\tPC: 0x%X\n", prefixByte ? "CB" : "", instructionByte, registers.PC);
 				instruction(cycles, registers, memory);
-				std::cout << "Instruction: 0x" << \
-					(prefixByte ? "CB" : "") << std::hex << instructionByte << std::endl;
 			}
 			else {
-				std::cerr << "Invalid instruction: 0x" << \
-					(prefixByte ? "CB" : "") << std::hex << instructionByte << std::endl;
+				fprintf(stderr, "Invalid Instruction: 0x%s%X\n", prefixByte ? "CB" : "", instructionByte);
 			}
 		}
 	} else {
