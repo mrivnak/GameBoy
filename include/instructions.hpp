@@ -38,34 +38,34 @@ namespace {
 
 	// ## 8-bit arithmetic and logic instructions ##
 
-	// ADC A,r8
-	// ADC A,[HL]
-	// ADC A,n8
-	// ADD A,r8
-	// ADD A,[HL]
-	// ADD A,n8
-	// AND A,r8
-	// AND A,[HL]
-	// AND A,n8
-	// CP A,r8
-	// CP A,[HL]
-	// CP A,n8
+	void op_ADC(uint8_t& data, unsigned int& cycles, Registers& reg);  // ADC A,r8
+	void op_ADC(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // ADC A,[HL]
+	void op_ADC(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // ADC A,n8
+	void op_ADD(uint8_t& data, unsigned int& cycles, Registers& reg);  // ADD A,r8
+	void op_ADD(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // ADD A,[HL]
+	void op_ADD(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // ADD A,n8
+	void op_AND(uint8_t& data, unsigned int& cycles, Registers& reg);  // AND A,r8
+	void op_AND(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // AND A,[HL]
+	void op_AND(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // AND A,n8
+	void op_CP(uint8_t& data, unsigned int& cycles, Registers& reg);  // CP A,r8
+	void op_CP(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem); // CP A,[HL]
+	void op_CP(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // CP A,n8
 	void op_DEC(uint8_t& data, unsigned int& cycles, Registers& reg);  // DEC r8
-	// DEC [HL]
+	void op_DEC(uint16_t address, unsigned int& cycles, Registers& reg);  // DEC [HL]
 	void op_INC(uint8_t& data, unsigned int& cycles, Registers& reg);  // INC r8
-	// INC [HL]
-	// OR A,r8
-	// OR A,[HL]
-	// OR A,n8
-	// SBC A,r8
-	// SBC A,[HL]
-	// SBC A,n8
-	// SUB A,r8
-	// SUB A,[HL]
-	// SUB A,n8
-	// XOR A,r8
-	// XOR A,[HL]
-	// XOR A,n8
+	void op_INC(uint16_t address, unsigned int& cycles, Registers& reg);  // INC [HL]
+	void op_OR(uint8_t& data, unsigned int& cycles, Registers& reg);  // OR A,r8
+	void op_OR(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // OR A,[HL]
+	void op_OR(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // OR A,n8
+	void op_SBC(uint8_t& data, unsigned int& cycles, Registers& reg);  // SBC A,r8
+	void op_SBC(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // SBC A,[HL]
+	void op_SBC(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // SBC A,n8
+	void op_SUB(uint8_t& data, unsigned int& cycles, Registers& reg);  // SUB A,r8
+	void op_SUB(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // SUB A,[HL]
+	void op_SUB(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // SUB A,n8
+	void op_XOR(uint8_t& data, unsigned int& cycles, Registers& reg);  // XOR A,r8
+	void op_XOR(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // XOR A,[HL]
+	void op_XOR(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // XOR A,n8
 
 	// ## 16-bit arithmetic instructions ##
 
