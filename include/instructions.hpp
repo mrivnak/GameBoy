@@ -107,63 +107,62 @@ namespace {
 
 	// ## Load instructions ##
 
-	// LD r8,r8
-	void op_LD(uint8_t& dest, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD r8,n8
-	void op_LD(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD r16,n16
-	void op_LD(uint16_t address, uint8_t data, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [HL],r8
-	void op_LD(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [HL],n8
-	void op_LD(uint8_t& dest, uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD r8,[HL]
-	// LD [r16],A and LD [n16],A
-	// LDH [n16],A
-	// LDH [C],A
-	// LD A,[r16]
-	// LD A,[n16]
-	// LDH A,[n16]
-	// LDH A,[C]
-	void op_LDIW(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [HLI],A
-	// LD [HLD],A
-	// LD A,[HLI]
-	// LD A,[HLD]
+	void op_LD_RR(uint8_t& dest, uint8_t& src, unsigned int& cycles, Registers& reg);  // LD r8,r8
+	void op_LD_RN(uint8_t& dest, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD r8,n8
+	void op_LD16_RN(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD r16,n16
+	void op_LD_PR(uint16_t address, uint8_t data, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [HL],r8
+	void op_LD_PN(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [HL],n8
+	void op_LD_RP(uint8_t& dest, uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD r8,[HL]
+	void op_LD16_NA(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [n16],A
+	void op_LD16_AN(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD A,[n16]
+	void op_LDH_PA(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LDH [n16],A
+	void op_LDH_AP(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LDH A,[n16]
+	void op_LDH_CA(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LDH [C],A
+	void op_LDH_AC(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LDH A,[C]
+	void op_LD_IW(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [HLI],A
+	void op_LD_DW(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [HLD],A
+	void op_LD_IR(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD A,[HLI]
+	void op_LD_DR(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD A,[HLD]
 
 	// ## Jumps and subroutines ##
 
-	// CALL n16
-	// CALL cc,n16
-	// JP HL
-	// JP n16
-	// JP cc,n16
-	void op_JR(unsigned int& cycles, Registers& reg, MemoryBus& mem); // JR e8
+	void op_CALL(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // CALL n16
+	void op_CALL(bool cond, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // CALL cc,n16
+	void op_JP_HL(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // JP HL
+	void op_JP(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // JP n16
+	void op_JP(bool cond, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // JP cc,n16
+	void op_JR(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // JR e8
 	void op_JR(bool cond, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // JR cc,e8
-	// RET cc
-	// RET
-	// RETI
+	void op_RET(bool cond, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // RET cc
+	void op_RET(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // RET
+	void op_RETI(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // RETI
 	void op_RST(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // RST vec
 
 	// ## Stack operation instructions ##
 
-	// ADD HL,SP
-	// ADD SP,e8
-	// DEC SP
-	// INC SP
-	// LD SP,n16
-	void op_LD_SP(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [n16],SP
-	// LD HL,SP+e8
-	// LD SP,HL
-	// POP AF
-	// POP r16
-	// PUSH AF
-	// PUSH r16
+	void op_ADD_HL_SP(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // ADD HL,SP
+	void op_ADD_SP(unsigned int cycles, Registers& reg, MemoryBus& mem);  // ADD SP,e8
+	void op_DEC_SP(unsigned int& cycles, Registers& reg);  // DEC SP
+	void op_INC_SP(unsigned int& cycles, Registers& reg);  // INC SP
+	void op_LD_SPR(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD SP,n16
+	void op_LD_SPW(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD [n16],SP
+	void op_LD_HL_SP(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // LD HL,SP+e8
+	void op_LD_SP_HL(unsigned int& cycles, Registers& reg);  // LD SP,HL
+	void op_POP_AF(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // POP AF
+	void op_POP(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // POP r16
+	void op_PUSH_AF(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // PUSH AF
+	void op_PUSH(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // PUSH r16
 
 	// ## Miscellaneous instructons ##
 
-	// CCF
-	// CPL
+	void op_CCF(unsigned int& cycles, Registers& reg);  // CCF
+	void op_CPL(unsigned int& cycles, Registers& reg);  // CPL
 	void op_DAA(unsigned int& cycles, Registers& reg);  // DAA
-	// DI
-	// EI
-	// HALT
+	void op_DI(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // DI
+	void op_EI(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // EI
+	void op_HALT(unsigned int& cycles, Registers& reg);  // HALT
 	void op_NOP(unsigned int& cycles, Registers& reg);  // NOP
-	// SCF
+	void op_SCF(unsigned int& cycles, Registers& reg);  // SCF
 	void op_STOP(unsigned int& cycles, Registers& reg);  // STOP
 
 };
