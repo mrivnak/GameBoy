@@ -36,10 +36,30 @@ namespace {
 
 	uint16_t getAddress(uint8_t a, uint8_t b);
 
-	void op_SRA(uint8_t& data, Registers& reg);
-	void op_SWAP(uint8_t& data, Registers& reg);
-	void op_SRL(uint8_t& data, Registers& reg);
-	void op_BIT(int bit, uint8_t& data, Registers& reg);
-	void op_RES(int bit, uint8_t& data);
-	void op_SET(int bit, uint8_t& data);
+	void op_RL(unsigned int& cycles, uint8_t& data, Registers& reg);
+	void op_RL(unsigned int& cycles, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_RR(unsigned int& cycles, uint8_t& data, Registers& reg);
+	void op_RR(unsigned int& cycles, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_SLA(unsigned int& cycles, uint8_t& data, Registers& reg);
+	void op_SLA(unsigned int& cycles, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_SRA(unsigned int& cycles, uint8_t& data, Registers& reg);
+	void op_SRA(unsigned int& cycles, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_SWAP(unsigned int& cycles, uint8_t& data, Registers& reg);
+	void op_SWAP(unsigned int& cycles, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_SRL(unsigned int& cycles, uint8_t& data, Registers& reg);
+	void op_SRL(unsigned int& cycles, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_BIT(unsigned int& cycles, int bit, uint8_t& data, Registers& reg);
+	void op_BIT(unsigned int& cycles, int bit, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_RES(unsigned int& cycles, int bit, uint8_t& data, Registers& reg);
+	void op_RES(unsigned int& cycles, int bit, uint16_t address, Registers& reg, MemoryBus& mem);
+
+	void op_SET(unsigned int& cycles, int bit, uint8_t& data, Registers& reg);
+	void op_SET(unsigned int& cycles, int bit, uint16_t address, Registers& reg, MemoryBus& mem);
 };
