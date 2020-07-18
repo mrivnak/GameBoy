@@ -116,7 +116,7 @@ void Instructions::initNonPrefixed() {
 
 	// LD (DE),A
 	nonPrefixed[0x12] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		op_LD_PR(getAddress(reg.H, reg.L), cycles, reg, mem);
+		op_LD_PR(getAddress(reg.H, reg.L), reg.A, cycles, reg, mem);
 	};
 
 	// INC DE
@@ -286,7 +286,7 @@ void Instructions::initNonPrefixed() {
 
 	// INC (HL)
 	nonPrefixed[0x34] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		op_INC(getAddress(reg.H, reg.L));
+		op_INC(getAddress(reg.H, reg.L), cycles, reg, mem);
 	};
 
 	// DEC (HL)
@@ -1001,7 +1001,7 @@ void Instructions::initNonPrefixed() {
 
 	// JP u16
 	nonPrefixed[0xC3] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		op_JP16(cycles, reg, mem);
+		op_JP(cycles, reg, mem);
 	};
 
 	// CALL NZ,u16
@@ -1073,7 +1073,7 @@ void Instructions::initNonPrefixed() {
 
 	// JP NC,u16
 	nonPrefixed[0xD2] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		op_JP(!get.getCarry(), cycles, reg, mem);
+		op_JP(!reg.getCarry(), cycles, reg, mem);
 	};
 
 	// 0xD3 Blank
@@ -1251,7 +1251,7 @@ void Instructions::initNonPrefixed() {
 
 	// 0xFB EI
 	nonPrefixed[0xFB] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		op_EI(cycles, reg);
+		op_EI(cycles, reg, mem);
 	};
 
 	// 0xFC Blank
@@ -1303,7 +1303,7 @@ void Instructions::initPrefixed() {
 
 	// RLC (HL)
 	prefixed[0x06] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		op_RLC(genAddress(reg.H, reg.L), cycles, reg, mem);
+		op_RLC(getAddress(reg.H, reg.L), cycles, reg, mem);
 	};
 
 	// RLC A
@@ -1343,7 +1343,7 @@ void Instructions::initPrefixed() {
 
 	// RRC (HL)
 	prefixed[0x0E] = [](unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		op_RRC(genAddress(reg.H, reg.L), cycles, reg, mem);
+		op_RRC(getAddress(reg.H, reg.L), cycles, reg, mem);
 	};
 
 	// RRC A
@@ -2630,11 +2630,11 @@ namespace {
 		
 		uint8_t HL = (mem.read(address));
 		reg.setHalfCarry(((reg.A & 0xF) + (HL & 0xF)) & 0x10 == 0x10);
-		uint16_t result = (uint16_t) a + (uint16_t) HL;
+		uint16_t result = (uint16_t) reg.A + (uint16_t) HL;
 
-		a += HL;
+		reg.A += HL;
 
-		reg.setZero(a == 0);
+		reg.setZero(reg.A == 0);
 		reg.setNegative(false);
 		reg.setCarry(result > 0xFF);
 
@@ -2757,7 +2757,7 @@ namespace {
 	}
 	
 	// DEC [HL]
-	void op_DEC(uint16_t address, unsigned int& cycles, Registers& reg) {
+	void op_DEC(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
 		uint8_t result = mem.read(address);
@@ -2789,7 +2789,7 @@ namespace {
 	}
 	
 	// INC [HL]
-	void op_INC(uint16_t address, unsigned int& cycles, Registers& reg) {
+	void op_INC(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem) {
 		cycles = 12;
 
 		uint8_t result = mem.read(address);
@@ -3432,9 +3432,9 @@ namespace {
 	
 	// LDH [C],A
 	void op_LDH_CA(unsigned int& cycles, Registers& reg, MemoryBus& mem) {
-		cycles = 12;
+		cycles = 8;
 		mem.write(0xFF00 + (uint16_t) reg.C, reg.A);
-		reg.PC += 2;
+		reg.PC += 1;
 	}
 
 	// LDH A,[n16]
@@ -3508,6 +3508,11 @@ namespace {
 	}
 
 	// ## Jumps and subroutines ##
+
+	/*
+	call is basically just a jump but it stores the address it jumped from in stack to later get back to that point with a return instruction
+	thats a very simple and not 100% technically accurate description but yeah
+	*/
 
 	// CALL n16
 	void op_CALL(unsigned int& cycles, Registers& reg, MemoryBus& mem) {

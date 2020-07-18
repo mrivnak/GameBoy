@@ -51,9 +51,9 @@ namespace {
 	void op_CP(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem); // CP A,[HL]
 	void op_CP(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // CP A,n8
 	void op_DEC(uint8_t& data, unsigned int& cycles, Registers& reg);  // DEC r8
-	void op_DEC(uint16_t address, unsigned int& cycles, Registers& reg);  // DEC [HL]
+	void op_DEC(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // DEC [HL]
 	void op_INC(uint8_t& data, unsigned int& cycles, Registers& reg);  // INC r8
-	void op_INC(uint16_t address, unsigned int& cycles, Registers& reg);  // INC [HL]
+	void op_INC(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // INC [HL]
 	void op_OR(uint8_t& data, unsigned int& cycles, Registers& reg);  // OR A,r8
 	void op_OR(uint16_t address, unsigned int& cycles, Registers& reg, MemoryBus& mem);  // OR A,[HL]
 	void op_OR(unsigned int& cycles, Registers& reg, MemoryBus& mem);  // OR A,n8
@@ -69,9 +69,9 @@ namespace {
 
 	// ## 16-bit arithmetic instructions ##
 
-	void op_ADD(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg);  // ADD HL,r16
-	void op_DEC(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg);  // DEC r16
-	void op_INC(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg);  // INC r16
+	void op_ADD16(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg);  // ADD HL,r16
+	void op_DEC16(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg);  // DEC r16
+	void op_INC16(uint8_t& a, uint8_t& b, unsigned int& cycles, Registers& reg);  // INC r16
 
 	// ## Bit operation instructions ##
 

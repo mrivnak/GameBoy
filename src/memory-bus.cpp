@@ -135,10 +135,75 @@ void MemoryBus::loadDisplay(Display * display) {
 }
 
 uint8_t MemoryBus::readIO(const uint16_t address) const {
-	// TODO: implement read I/O
-	return 0;
+	switch (address) {
+		case 0xFF40:
+			return display->LCDC;
+		case 0xFF41:
+			return display->LCDCSTAT;
+		case 0xFF42:
+			return display->SCY;
+		case 0xFF43:
+			return display->SCX;
+		case 0xFF44:
+			return display->LY;
+		case 0xFF45:
+			return display->LYC;
+		case 0xFF47:
+			return display->BGP;
+		case 0xFF48:
+			return display->OBP0;
+		case 0xFF49:
+			return display->OBP1;
+		case 0xFF4A:
+			return display->WY;
+		case 0xFF4B:
+			return display->WX;
+		default:
+			fprintf(stderr,"ERROR: Attempt to read non-readable/not implemented I/O address: 0x%X\n", address);
+			// exit(1);
+			return 0xFF;
+		// TODO: add the rest of the IO registers
+	}
 }
 
 void MemoryBus::writeIO(const uint16_t address, const uint8_t byte) {
-	// TODO: implement write I/O
+	switch (address) {
+		case 0xFF40:
+			display->LCDC = byte;
+			break;
+		case 0xFF41:
+			display->LCDCSTAT = byte;
+			break;
+		case 0xFF42:
+			display->SCY = byte;
+			break;
+		case 0xFF43:
+			display->SCX = byte;
+			break;
+		case 0xFF44:
+			display->LY = byte;
+			break;
+		case 0xFF45:
+			display->LYC = byte;
+			break;
+		case 0xFF47:
+			display->BGP = byte;
+			break;
+		case 0xFF48:
+			display->OBP0 = byte;
+			break;
+		case 0xFF49:
+			display->OBP1 = byte;
+			break;
+		case 0xFF4A:
+			display->WY = byte;
+			break;
+		case 0xFF4B:
+			display->WX = byte;
+			break;
+		default:
+			fprintf(stderr,"ERROR: Attempt to write non-writeable/not implemented I/O address: 0x%X\n", address);
+			// exit(1);
+		// TODO: add the rest of the IO registers
+	}
 }

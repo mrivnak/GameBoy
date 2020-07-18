@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 
 	Motherboard motherboard;
 
-	// motherboard.loadCartridge(gameFilename);
+	motherboard.loadCartridge(gameFilename);
 	motherboard.loadBootROM();
 
 	std::string gameTitle = motherboard.getTitle();

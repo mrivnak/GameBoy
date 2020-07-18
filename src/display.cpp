@@ -9,3 +9,7 @@ Display::Display() {
 Display::~Display() {
 
 }
+
+void Display::clock() {
+    cycles++;
+}
