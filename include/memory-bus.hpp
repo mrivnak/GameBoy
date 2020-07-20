@@ -1,24 +1,31 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 
-class MemoryBus final {
-	public:
-		static constexpr const uintptr_t MEMORY_SIZE = 0x10000;
+#include "cartridge.hpp"
+#include "display.hpp"
 
-		MemoryBus();
+struct MemoryBus {
 
-		uint8_t readByte(uint16_t address) const;
+	uint8_t read(const uint16_t address) const;
+	void write(const uint16_t address, const uint8_t byte);
 
-		uint8_t operator[](uint16_t address) const;
+	uint8_t readIO(const uint16_t address) const;
+	void writeIO(const uint16_t address, const uint8_t byte);
 
-		uint8_t* getData();
-		const uint8_t* getData() const;
+	uint8_t operator[](const uint16_t address) const;
 
-		~MemoryBus();
-	private:
-		uint8_t* memory;
+	void loadCartridge(Cartridge * cartridge);
+	void loadDisplay(Display * display);
 
-		// TODO: null copy and assign
+	std::array<uint8_t, 0x2000> WRAM;
+	std::array<uint8_t, 0x80> HRAM;
+	bool interruptsEnable;
+
+	Cartridge * cartridge;
+	Display * display;
+
+	bool ERAMEnable;
+	uint8_t bankingMode;
 };
-

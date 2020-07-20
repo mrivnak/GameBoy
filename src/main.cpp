@@ -2,8 +2,6 @@
 #include "window.hpp"
 #include "render-device.hpp"
 
-#include "termdebug.hpp"
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
@@ -12,20 +10,16 @@
 #include <GL/gl.h>
 #include <cxxopts.hpp>
 
-#include "processor.hpp"
+#include "motherboard.hpp"
 
 #include "bitmap.hpp"
 #include "texture.hpp"
-
-#include "audio.hpp"
-
-#define BOOT_ROM_SIZE 0xFF
 
 #ifdef main
 #undef main
 #endif
 int main(int argc, char** argv) {
-	std::string game_filename;
+	std::string gameFilename;
 	bool DEBUG = false;
 
 	cxxopts::Options options("GameBoy", "Nintendo Game Boy emulator built in C++");
@@ -47,7 +41,7 @@ int main(int argc, char** argv) {
 		}
 
 		if (result.count("f")) {
-			game_filename = result["f"].as<std::string>();
+			gameFilename = result["f"].as<std::string>();
 		}
 		else {
 			std::cerr << "No file specified! Exiting..." << std::endl;
@@ -63,53 +57,21 @@ int main(int argc, char** argv) {
 	// Filename related regex stuff
 	std::regex gb(".*.gb");
 
-	if (!std::regex_match(game_filename, gb)) {
+	if (!std::regex_match(gameFilename, gb)) {
 		std::cerr << "Invalid file extension. Only \".gb\" files are supported." << std::endl;
 		return 1;
 	}
 
-	std::FILE* game_file = std::fopen(game_filename.c_str(), "r");
+	Motherboard motherboard;
 
-	if (!game_file) {
-		std::perror("Failed to open game file");
-		std::cerr << "Filename: " << game_filename << std::endl;
-		return 1;
-	}
+	motherboard.loadCartridge(gameFilename);
+	motherboard.loadBootROM();
 
-	Processor processor;
-
-	std::FILE* boot_file = std::fopen("../res/DMG_ROM.bin", "r");
-
-	if (!boot_file) {
-		std::cerr << "Failed to open Boot ROM file" << std::endl;
-		return 1;
-	}
-
-	if (std::fread(processor.getMemory().getData(), 1, BOOT_ROM_SIZE, boot_file)
-			!= BOOT_ROM_SIZE) {
-		std::fputs("Failed to write boot ROM!", stderr);
-		std::fclose(boot_file);
-
-		return 1;
-	}
-
-	std::fclose(boot_file);
-
-	const uint8_t TEST_PROGRAM[] = {
-		0x00, // NOP
-		0x10, // STOP
-		0x20, (uint8_t)(-4), // JR NZ, 1h
-	};
-
-	std::memcpy(processor.getMemory().getData(), TEST_PROGRAM, sizeof(TEST_PROGRAM));
+	std::string gameTitle = motherboard.getTitle();
 
 	Application app;
-	Window& window = app.createWindow("Gameboy Emulator", 800, 600);
+	Window& window = app.createWindow("WIT GB Emulator - " + gameTitle, 800, 600);
 	auto& renderDevice = window.getRenderDevice();
-
-	if (DEBUG) {
-		TermDebug::printDebug(&processor.getRegisters());
-	}
 
 	Bitmap bmp(64, 64);
 	auto data = bmp.getData();
@@ -124,16 +86,23 @@ int main(int argc, char** argv) {
 
 	Texture tex(bmp);
 
+	int frameCounter = 0;  // TODO: Replace frame counter with V-Blank interrupts
 	while (app.isRunning()) {
-		app.pollEvents();
+		motherboard.clock();
 
-		// processor exec is going in here for now
-		processor.step();
+		if (frameCounter % 70220 == 0) {  // Not exact
+			app.pollEvents();
 
-		renderDevice.clear();
-		renderDevice.drawTexturedQuad(tex);
+			renderDevice.clear();
+			renderDevice.drawTexturedQuad(tex);
 
-		window.swapBuffers();
+			window.swapBuffers();
+		}
+		
+		frameCounter++;
+
+		if (frameCounter == 70220)
+			frameCounter = 0;
 	}
 
 	return 0;

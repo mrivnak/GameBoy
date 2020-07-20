@@ -19,8 +19,7 @@ class Processor final {
 	private:
 		Registers registers;
 
-		uint16_t pc;
-		uint8_t yieldCycles;
+		unsigned int cycles;
 
 		MemoryBus memory;
 

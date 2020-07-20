@@ -9,7 +9,7 @@
 		"args": [
 			"--debug",
 			"-f",
-			"${workspaceFolder}/res/ROMs/Pokemon Red.gb"
+			"${workspaceFolder}/res/ROMs/Tetris.gb"
 		],
 		"stopAtEntry": false,
 		"cwd": "${workspaceFolder}/build",
