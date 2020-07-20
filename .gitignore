@@ -78,3 +78,5 @@ _deps
 build/
 res/ROMs/
 .vscode/c_cpp_properties.json
+
+res/dmg_boot_trace
