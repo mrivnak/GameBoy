@@ -25,7 +25,11 @@ class Motherboard {
 
 		void loadBootROM();
 		void loadCartridge(std::string filename);
+
 		void loadMemory();
+		void loadInterrupts();
+
+		std::array<std::array<uint8_t, 160>, 144> getFrameBuffer();
 
 		std::string getTitle();
 	private:

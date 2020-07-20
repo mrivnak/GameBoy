@@ -34,7 +34,7 @@ void Processor::step() {
 
 			if (auto instruction = Instructions::ref().fetchInstruction(instructionByte, prefixByte)) {
 				// printf("Instruction: 0x%s%X;\tPC: 0x%X\n", prefixByte ? "CB" : "", instructionByte, registers.PC);
-				printf("A:0x%02X B:0x%02X C:0x%02X D:0x%02X E:0x%02X F:0x%02X H:0x%02X L:0x%02X | PC:0x%04X | SP:0x%04X | OP:0x%s%X\n",
+				printf("A:0x%02X B:0x%02X C:0x%02X D:0x%02X E:0x%02X F:0x%02X H:0x%02X L:0x%02X | PC:0x%04X | SP:0x%04X | OP:0x%s%X\u001b[91D",
 					registers.A,
 					registers.B,
 					registers.C,
@@ -45,7 +45,7 @@ void Processor::step() {
 					registers.L,
 					registers.PC,
 					registers.SP,
-					prefixByte ? "CB" : "",
+					prefixByte ? "CB" : "--",
 					instructionByte
 				);
 				instruction(cycles, registers, memory);

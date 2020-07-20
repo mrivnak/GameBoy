@@ -2,6 +2,7 @@
 
 Motherboard::Motherboard() {
 	loadMemory();
+	loadInterrupts();
 }
 
 Motherboard::~Motherboard() {
@@ -10,9 +11,9 @@ Motherboard::~Motherboard() {
 
 void Motherboard::clock() {
 	processor.step();
+	display.clock();
 }
 
-// TODO: IMPORTANT Add proper handling for cartridge and boot roms with new structures
 void Motherboard::loadBootROM() {
 	std::vector<uint8_t> * data = new std::vector<uint8_t>;
 
@@ -22,8 +23,6 @@ void Motherboard::loadBootROM() {
 		cartridge.ROM[i] = (*data)[i];
 		cartridge.rombank.bank[0][i] = (*data)[i];
 	}
-
-	
 
 	delete data;
 }
@@ -63,6 +62,10 @@ void Motherboard::loadMemory() {
 	memoryBus->loadDisplay(&display);
 }
 
+void Motherboard::loadInterrupts() {
+	
+}
+
 std::vector<uint8_t> Motherboard::readFile(std::string filename)
 {
     // open the file:
@@ -96,4 +99,8 @@ std::vector<uint8_t> Motherboard::readFile(std::string filename)
 std::string Motherboard::getTitle() {
 	std::string str(std::begin(cartridge.header.title), std::end(cartridge.header.title));
 	return str;
+}
+
+std::array<std::array<uint8_t, 160>, 144> Motherboard::getFrameBuffer() {
+	return display.getFrameBuffer();
 }
