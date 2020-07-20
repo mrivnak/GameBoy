@@ -17,6 +17,8 @@
 #include "bitmap.hpp"
 #include "texture.hpp"
 
+#include "audio.hpp"
+
 #define BOOT_ROM_SIZE 0xFF
 
 #ifdef main
