@@ -9,8 +9,6 @@
 class Registers;
 class MemoryBus;
 
-// https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
-// http://www.devrs.com/gb/files/opcodes.html
 class Instructions final : public Singleton<Instructions> {
 	public:
 		static constexpr const uint8_t PREFIX_BYTE = 0xCB;
